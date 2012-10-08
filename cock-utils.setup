@@ -8,3 +8,4 @@
 ;;; Cock executable
 (compile "bin/cock.scm" -o cock)
 (install-program 'cock "cock")
+(remove-file* "cock")
