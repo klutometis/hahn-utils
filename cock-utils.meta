@@ -5,10 +5,7 @@
  (depends alist-lib
           cock
           debug
-          irregex
-          lolevel
           matchable
-          regex
           stack)
  (test-depends)
  (foreign-depends))
