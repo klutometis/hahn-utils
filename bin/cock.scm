@@ -2,7 +2,7 @@
 
 (use alist-lib
      args
-     cock-parse
+     cock-utils
      data-structures
      debug
      files
