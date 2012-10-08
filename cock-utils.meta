@@ -3,9 +3,14 @@
  (category doc-tools)
  (license "BSD")
  (depends alist-lib
+          args
           cock
           debug
           matchable
-          stack)
+          miscmacros
+          regex
+          shell
+          stack
+          usage)
  (test-depends)
  (foreign-depends))
