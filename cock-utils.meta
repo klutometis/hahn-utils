@@ -1,0 +1,14 @@
+((synopsis "Utilities for translating in-source docs to e.g. wiki, latex")
+ (author "Peter Danenberg")
+ (category doc-tools)
+ (license "BSD")
+ (depends alist-lib
+          cock
+          debug
+          irregex
+          lolevel
+          matchable
+          regex
+          stack)
+ (test-depends)
+ (foreign-depends))

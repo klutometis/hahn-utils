@@ -1,0 +1,10 @@
+(include "setup-helper")
+
+(setup-shared-extension-module
+ 'cock-utils
+ (extension-version "0.1")
+ compile-options: '(-X cock))
+
+;;; Cock executable
+(compile "bin/cock.scm" -o cock)
+(install-program 'cock "cock")
