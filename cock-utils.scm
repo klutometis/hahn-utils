@@ -23,10 +23,12 @@ drivers then write docexprs as e.g. LaTeX.")
        irregex
        lolevel
        matchable
+       posix
        regex
        srfi-13
        srfi-69
-       stack)
+       stack
+       utils)
 
   (import-for-syntax matchable)
 
