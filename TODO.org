@@ -9,6 +9,8 @@
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
+
+  Could have a simple =(@group <function>)= command.
 * TODO Inherit unspecified parameters from other procedures.
   #+BEGIN_SRC scheme
     (define (foo bar)
