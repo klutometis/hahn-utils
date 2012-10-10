@@ -6,6 +6,48 @@
   Since the package itself is installed before cock, we can
   theoretically =(use <package>)=, run the examples, and list the
   output. Some kind of =@dontrun= directive, &c.
+
+  #+BEGIN_SRC scheme :tangle example.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug
+         posix
+         utils)
+    
+    (define (example description . body)
+      (display description)
+      (receive (in out id)
+        ;; (process "csi" '("-q" "-R" "R"))
+        (process "csi -q -R R")
+        (with-output-to-port out
+          (lambda ()
+            (for-each pp body)))
+        (close-output-port out)
+        (for-each (lambda (line)
+                    (display line)
+                    (newline)) 
+          (read-lines in))))
+    
+    (example "This is insanity"
+             '(R* (ls))
+             '(display '(we really did go to town on the bitch (whence etc (the cause of the plague (is jews)))))
+             '(R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
+             '(R* (seq -5 5 by: 0.2))
+             '(R* (c (: 1 3)))
+             '(R* (c (: 1 3) ,R-NA))
+             '(R* (list "harro" ,R-NA))
+             '(R* (list "harro" (logical 0)))
+             '(R* (c "harro" (logical 0)))
+             '(R* (c "harro" ,R-NA))
+             '(R (str (list 1 2 3 ,R-NA)))
+             '(R* (is.na ,R-NA))
+             '(R (data attitude))
+             '(R* (attributes (summary (lm (as.formula "rating ~ .") data: attitude))))
+             '(R* ($ (summary (lm (as.formula "rating ~ .") data: attitude)) "coefficients"))
+             '(R* (is.finite ,R-inf+))
+             ;; '(R* (is.finite ,R-inf-))
+             ;; '(R* (is.finite ,R-NaN))
+             )
+    
+  #+END_SRC
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
