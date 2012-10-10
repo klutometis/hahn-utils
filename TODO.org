@@ -42,9 +42,11 @@
              '(R* (attributes (summary (lm (as.formula "rating ~ .") data: attitude))))
              '(R* ($ (summary (lm (as.formula "rating ~ .") data: attitude)) "coefficients"))
              '(R* (is.finite ,R-inf+))
-             ;; '(R* (is.finite ,R-inf-))
-             ;; '(R* (is.finite ,R-NaN))
-             )
+             '(R* (is.finite ,R-inf-))
+             '(R* (is.finite ,R-NaN))
+             '(R* ,R-inf+)
+             '(R* ,R-inf-)
+             '(R* ,R-NaN))
     
   #+END_SRC
 * TODO Doubling up functions
