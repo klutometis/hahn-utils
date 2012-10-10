@@ -9,14 +9,15 @@
 
   #+BEGIN_SRC scheme :tangle example.scm :shebang #!/usr/bin/env chicken-scheme
     (use debug
+         numbers
          posix
+         R
          utils)
     
     (define (example description . body)
       (display description)
       (receive (in out id)
         (process "csi" '("-q" "-R" "R"))
-        ;; (process "csi -q -R R")
         (with-output-to-port out
           (lambda ()
             (for-each pp body)))
@@ -31,22 +32,23 @@
              '(R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
              '(R* (seq -5 5 by: 0.2))
              '(R* (c (: 1 3)))
-             '(R* (c (: 1 3) ,R-NA))
-             '(R* (list "harro" ,R-NA))
+             '(R* (c (: 1 3) ,NA))
+             '(R* (list "harro" ,NA))
              '(R* (list "harro" (logical 0)))
              '(R* (c "harro" (logical 0)))
-             '(R* (c "harro" ,R-NA))
-             '(R (str (list 1 2 3 ,R-NA)))
-             '(R* (is.na ,R-NA))
+             '(R* (c "harro" ,NA))
+             '(R (str (list 1 2 3 ,NA)))
+             '(R* (is.na ,NA))
              '(R (data attitude))
              '(R* (attributes (summary (lm (as.formula "rating ~ .") data: attitude))))
              '(R* ($ (summary (lm (as.formula "rating ~ .") data: attitude)) "coefficients"))
-             '(R* (is.finite ,R-inf+))
-             '(R* (is.finite ,R-inf-))
-             '(R* (is.finite ,R-NaN))
-             '(R* ,R-inf+)
-             '(R* ,R-inf-)
-             '(R* ,R-NaN))
+             '(R* (is.finite ,+inf.0))
+             '(R* (is.finite ,-inf.0))
+             '(R* (is.finite ,+nan.0))
+             '(R* (is.finite ,-nan.0))
+             '(R* (is.na ,NA))
+             '(R* (c 1 2 3 ,NA))
+             )
     
   #+END_SRC
 * TODO Doubling up functions
