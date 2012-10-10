@@ -7,9 +7,11 @@
           debug
           matchable
           miscmacros
+          posix
           regex
           shell
           stack
-          usage)
+          usage
+          utils)
  (test-depends)
  (foreign-depends))
