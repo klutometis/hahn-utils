@@ -139,9 +139,14 @@ EOF
       ((title)
        (hash-table-set! data 'title (car arguments))
        void)
+      ((egg)
+       (hash-table-set! data 'egg (car arguments))
+       void)
       ((description)
        (hash-table-set! data 'description (car arguments))
        void)
+      ((example)
+       (write-example data (car arguments) (cdr arguments)))
       ((heading)
        (let ((title (car arguments)))
          (lambda ()
@@ -174,8 +179,15 @@ EOF
   (match heading-level
     (0 wiki-subtitle)
     (1 wiki-subsubtitle)
-    (2 wiki-subsubsubtitle)
-    (3 wiki-subsubsubtitle)))
+    (_ wiki-subsubsubtitle)))
+
+(define wiki-make-current-heading
+  (case-lambda
+   ((data)
+    (wiki-make-current-heading data 0))
+   ((data offset)
+    (wiki-make-heading
+     (+ (hash-table-ref/default data 'heading-level 0) offset)))))
 
 (define (wiki-make-description descriptions)
   (string-join descriptions "\n\n"))
@@ -186,12 +198,7 @@ EOF
                           name
                           item
                           . rest-items)
-  (let ((heading
-         (wiki-make-heading
-          (hash-table-ref/default
-           data
-           'heading-level
-           0)))
+  (let ((heading (wiki-make-current-heading data))
         (description (wiki-make-description (doc-descriptions doc))))
     (display (heading (wiki-monospace name)))
     (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
@@ -213,10 +220,27 @@ EOF
           parameters)))
     (string-join parameters "\n")))
 
+(define (write-example data description body)
+  (let ((heading (wiki-make-current-heading data 1)))
+    (display (heading "Example"))
+    (display description)
+    (receive (in out id)
+      (process "csi" '("-q" "-R" "R"))
+      (with-output-to-port out
+        (lambda ()
+          (for-each pp body)))
+      (close-output-port out)
+      (for-each (lambda (line)
+                  (display " ")
+                  (display line)
+                  (newline)) 
+        (read-lines in)))))
+
 (define (wiki-parse-procedure doc expr data name formals)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters))
+          (examples (procedure-examples special-parameters)))
       (let ((procedure
              (make-wiki-procedure wiki-procedure name formals to))
             (parameters
@@ -227,7 +251,10 @@ EOF
                             data
                             name
                             procedure
-                            parameters))))))
+                            parameters)
+          (for-each (lambda (example)
+                      (write-example data (car example) (cdr example)))
+            examples))))))
 
 (define (wiki-parse-case-lambda doc expr data name formals+)
   (receive (normal-parameters special-parameters)
@@ -371,7 +398,11 @@ EOF
             (email
              (hash-table-ref/default data 'email "anonymous@example.com"))
             (title
-             (hash-table-ref/default data 'title "Title"))
+             (let ((title (hash-table-ref/default data 'egg #f))
+                   (egg (hash-table-ref/default data 'egg #f)))
+               (cond (title title)
+                     (egg egg)
+                     (else "title"))))
             (description
              (hash-table-ref/default data 'description "Description")))
         (display (wiki-preamble title description))
