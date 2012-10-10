@@ -1,3 +1,5 @@
+* TODO Get metadata from egg.
+  Authors, &c.
 * TODO Add a newline after =@(text ..)=.
 * TODO =@example=
   Everything should be able to take examples, even modules; examples
@@ -51,6 +53,28 @@
              )
     
   #+END_SRC
+
+  #+BEGIN_SRC scheme :tangle test-example.scm
+    @(egg "R")
+    
+    (define (frobnitz when ick)
+      @("Crane, Ichabod"
+        (when "A tête-à-tête with the heiress")
+        (ick "with the air of one who had been sacking a henroost, rather
+    than a fair lady's heart")
+        (@example "He goes over the mountain like this:"
+                  (display "Something, however ... must have gone wrong,")
+                  (display " for he certainly sallied forth,")
+                  (display " after no very great interval,")
+                  (display " with an air quite desolate and chapfallen.")))
+      'away!)
+    
+  #+END_SRC
+
+  Probably need an example-header that knows to e.g. ...; no, let's
+  have =@egg= instead of =@title=. We'll use the egg for title, and we
+  have the added benefit of knowing what the egg is called. This we
+  could eventually harvest from <egg>.meta, too.
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
@@ -359,7 +383,5 @@
         internal: #t))
     
   #+END_SRC
-* TODO Get metadata from egg.
-  Authors, &c.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
