@@ -19,7 +19,6 @@ drivers then write docexprs as e.g. LaTeX.")
           srfi-1
           stack)
   (use alist-lib
-       cock
        debug
        irregex
        lolevel

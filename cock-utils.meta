@@ -4,7 +4,6 @@
  (license "BSD")
  (depends alist-lib
           args
-          cock
           debug
           matchable
           miscmacros
