@@ -176,7 +176,7 @@
 (define (write-template . keys-or-substitutions)
   (display (apply substitute-template keys-or-substitutions)))
 
-(define special-parameters '(@to))
+(define special-parameters (list (string->symbol "@to")))
 
 (define (special-parameter? parameter)
   (memq parameter special-parameters))
@@ -196,11 +196,15 @@
 
 ;;; Generalize this.
 (define (procedure-to special-parameters)
-  (alist-ref/default special-parameters '@to '("unspecified")))
+  (alist-ref/default special-parameters
+                     (string->symbol "@to")
+                     '("unspecified")))
 
 (define (scalar-procedure? normal-parameters special-parameters)
   (or (not (null? normal-parameters))
-      (alist-ref/default special-parameters '@to #f)))
+      (alist-ref/default special-parameters
+                         (string->symbol "@to")
+                         #f)))
 
 (define (formals parameters) (map car parameters))
 
