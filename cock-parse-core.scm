@@ -30,6 +30,10 @@
 (define-record-and-printer null-expression)
 (define null-expression (make-null-expression))
 
+(define (prepend-@ symbol)
+  (string->symbol
+   (string-append "@" (symbol->string symbol))))
+
 (set-read-syntax! #\@
   (lambda (in)
     (let ((expression (read in)))
