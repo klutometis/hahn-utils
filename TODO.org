@@ -28,7 +28,6 @@
     
     (example "This is insanity"
              '(R* (ls))
-             '(display '(we really did go to town on the bitch (whence etc (the cause of the plague (is jews)))))
              '(R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
              '(R* (seq -5 5 by: 0.2))
              '(R* (c (: 1 3)))
