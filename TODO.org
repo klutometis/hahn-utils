@@ -15,8 +15,8 @@
     (define (example description . body)
       (display description)
       (receive (in out id)
-        ;; (process "csi" '("-q" "-R" "R"))
-        (process "csi -q -R R")
+        (process "csi" '("-q" "-R" "R"))
+        ;; (process "csi -q -R R")
         (with-output-to-port out
           (lambda ()
             (for-each pp body)))
