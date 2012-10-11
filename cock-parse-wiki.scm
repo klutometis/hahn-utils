@@ -192,6 +192,25 @@ EOF
 (define (wiki-make-description descriptions)
   (string-join descriptions "\n\n"))
 
+(define (write-example data description expressions)
+  (display description)
+  (newline)
+  (let ((env (environment-copy (interaction-environment) #t))
+        (egg (hash-table-ref/default data 'egg #f)))
+    ;; We can't seem to use `use' with env.
+    (when egg (eval `(require-extension ,egg)))
+    (do ((i 1 (+ i 1))
+         (expressions expressions (cdr expressions)))
+        ((null? expressions))
+      (let ((expression (car expressions)))
+        (fmt #t (columnar " " (format "#;~a> " i) (pretty expression)))
+        (fmt #t (columnar (make-string (+ 6 (inexact->exact
+                                             (floor
+                                              (/ (log (+ i 1))
+                                                 (log 10)))))
+                                       #\space)
+                          (pretty (eval expression))))))))
+
 (define (write-wiki-block doc
                           expr
                           data
