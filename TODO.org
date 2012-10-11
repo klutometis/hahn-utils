@@ -1,110 +1,5 @@
-* DONE We're still getting parser-leakage!
-  CLOSED: [2012-10-11 Thu 04:02]
-  - CLOSING NOTE [2012-10-11 Thu 04:02] \\
-    Use =@(noop)= or similar.
-  #+BEGIN_SRC scheme :tangle out-of-sequence.scm
-    @(egg test)
-    @(noop)
-    (define x 2)
-    (define y @("For reals") 3)
-  #+END_SRC
-* TODO Descriptions can take arbitrary directives?
-  If you want to e.g. include source; first element, therefore, a
-  list?
-
-  Or should we special-case =@source= in addition to =@example=? What
-  about =@header=?
 * TODO Get metadata from egg.
   Authors, &c.
-* DONE Add a newline after =@(text ..)=.
-  CLOSED: [2012-10-11 Thu 04:03]
-* TODO =@example=
-  Everything should be able to take examples, even modules; examples
-  should be as fundamental as source-code.
-
-  Since the package itself is installed before cock, we can
-  theoretically =(use <package>)=, run the examples, and list the
-  output. Some kind of =@dontrun= directive, &c.
-
-  #+BEGIN_SRC scheme :tangle example.scm :shebang #!/usr/bin/env chicken-scheme
-    (use debug
-         environments
-         fmt
-         numbers
-         posix
-         R
-         utils)
-    
-    (define (example description . body)
-      (display description)
-      (let ((env (environment-copy (interaction-environment))))
-        (eval '(require-extension R) env)
-        (do ((i 1 (+ i 1))
-             (body body (cdr body))
-             (expression (car body) (car body)))
-            ((null? body))
-          (fmt #t (format "#;~a> " i) (pretty expression))
-          (fmt #t (pretty (eval expression env))))))
-    
-    (example "This is insanity"
-             '(R* (ls))
-             '(R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
-             '(R* (seq -5 5 by: 0.2))
-             '(R* (c (: 1 3)))
-             '(R* (c (: 1 3) ,NA))
-             '(R* (list "harro" ,NA))
-             '(R* (list "harro" (logical 0)))
-             '(R* (c "harro" (logical 0)))
-             '(R* (c "harro" ,NA))
-             '(R (str (list 1 2 3 ,NA)))
-             '(R* (is.na ,NA))
-             '(R (data attitude))
-             '(R* (attributes (summary (lm (as.formula "rating ~ .") data: attitude))))
-             '(R* ($ (summary (lm (as.formula "rating ~ .") data: attitude)) "coefficients"))
-             '(R* (is.finite ,+inf.0))
-             '(R* (is.finite ,-inf.0))
-             '(R* (is.finite ,+nan.0))
-             '(R* (is.finite ,-nan.0))
-             '(R* (is.na ,NA))
-             '(R* (c 1 2 3 ,NA))
-             )
-    
-  #+END_SRC
-
-  #+BEGIN_SRC scheme :tangle test-example.scm
-    @(egg R)
-    @(source (let ((x 2)) (+ 2 2)))
-    @(noop)
-    
-    (define harro
-      @("Wanted to say a lot here; but, ouch."
-        (@internal))
-      2)
-    
-    (define (frobnitz when ick)
-      @("Crane, Ichabod"
-        (when "A tête-à-tête with the heiress")
-        (ick "with the air of one who had been sacking a henroost, rather
-    than a fair lady's heart")
-        (@example "He goes over the mountain like this:"
-                  ;; "Something, however ... must have gone wrong,\n"
-                  ;; (display " for he certainly sallied forth,\n")
-                  ;; (display " after no very great interval,\n")
-                  ;; (display " with an air quite desolate and chapfallen.\n")
-                  (R* (rnorm 10))
-                  (R (ls))
-                  (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
-                  (R* (seq -5 5 by: 0.2))))
-      'away!)
-    
-  #+END_SRC
-
-  Probably need an example-header that knows to e.g. ...; no, let's
-  have =@egg= instead of =@title=. We'll use the egg for title, and we
-  have the added benefit of knowing what the egg is called. This we
-  could eventually harvest from <egg>.meta, too.
-
-  Can we add this to the =wiki-write-block=?
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
@@ -133,18 +28,9 @@
   Would be nice if it could default to e.g. =<egg-name>.wiki=.
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
-* TODO Minimum required for self-documentation
-  At the very least, let's have a =@(source ...)= directive; we could
-  have =@(text ...)=, too, but we're going to fill it with
-  wiki-specific crap.
-
-  I'm yearning for =@(example ...)=.
 * TODO Changelog
 * TODO Repository
 * TODO License
-* TODO =parse-procedure=, &c. should be more than stubs.
-  There's a lot of boilerplate work to be done there that we could
-  specialize for e.g. wiki and latex.
 * TODO =pre-post-order=
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
@@ -337,19 +223,117 @@
 * TODO References
 * TODO Classes?
   Maybe this can be an extension.
-* TODO Define an intermediate long-hand.
-  If this, for instance, is our long-hand:
+* TODO Multiple authors (maintainer, &c.)
+  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE We're still getting parser-leakage!
+  CLOSED: [2012-10-11 Thu 04:02]
+  - CLOSING NOTE [2012-10-11 Thu 04:02] \\
+    Use =@(noop)= or similar.
+  #+BEGIN_SRC scheme :tangle out-of-sequence.scm
+    @(egg test)
+    @(noop)
+    (define x 2)
+    (define y @("For reals") 3)
+  #+END_SRC
+* DONE Add a newline after =@(text ..)=.
+  CLOSED: [2012-10-11 Thu 04:03]
+* DONE =@example=
+  CLOSED: [2012-10-11 Thu 04:32]
+  Everything should be able to take examples, even modules; examples
+  should be as fundamental as source-code.
 
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @(description: "Do something."
-        parameters: ((a "Thing to do"))
-        to: "Thing done")
-      (void))
+  Since the package itself is installed before cock, we can
+  theoretically =(use <package>)=, run the examples, and list the
+  output. Some kind of =@dontrun= directive, &c.
+
+  #+BEGIN_SRC scheme :tangle example.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug
+         environments
+         fmt
+         numbers
+         posix
+         R
+         utils)
+    
+    (define (example description . body)
+      (display description)
+      (let ((env (environment-copy (interaction-environment))))
+        (eval '(require-extension R) env)
+        (do ((i 1 (+ i 1))
+             (body body (cdr body))
+             (expression (car body) (car body)))
+            ((null? body))
+          (fmt #t (format "#;~a> " i) (pretty expression))
+          (fmt #t (pretty (eval expression env))))))
+    
+    (example "This is insanity"
+             '(R* (ls))
+             '(R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
+             '(R* (seq -5 5 by: 0.2))
+             '(R* (c (: 1 3)))
+             '(R* (c (: 1 3) ,NA))
+             '(R* (list "harro" ,NA))
+             '(R* (list "harro" (logical 0)))
+             '(R* (c "harro" (logical 0)))
+             '(R* (c "harro" ,NA))
+             '(R (str (list 1 2 3 ,NA)))
+             '(R* (is.na ,NA))
+             '(R (data attitude))
+             '(R* (attributes (summary (lm (as.formula "rating ~ .") data: attitude))))
+             '(R* ($ (summary (lm (as.formula "rating ~ .") data: attitude)) "coefficients"))
+             '(R* (is.finite ,+inf.0))
+             '(R* (is.finite ,-inf.0))
+             '(R* (is.finite ,+nan.0))
+             '(R* (is.finite ,-nan.0))
+             '(R* (is.na ,NA))
+             '(R* (c 1 2 3 ,NA))
+             )
+    
   #+END_SRC
 
-  we can come up with any number of short-hands that reduce to it.
-* TODO Ability to suppress internally documented functions.
+  #+BEGIN_SRC scheme :tangle test-example.scm
+    @(egg R)
+    @(source (let ((x 2)) (+ 2 2)))
+    @(noop)
+    
+    (define harro
+      @("Wanted to say a lot here; but, ouch."
+        (@internal))
+      2)
+    
+    (define (frobnitz when ick)
+      @("Crane, Ichabod"
+        (when "A tête-à-tête with the heiress")
+        (ick "with the air of one who had been sacking a henroost, rather
+    than a fair lady's heart")
+        (@example "He goes over the mountain like this:"
+                  ;; "Something, however ... must have gone wrong,\n"
+                  ;; (display " for he certainly sallied forth,\n")
+                  ;; (display " after no very great interval,\n")
+                  ;; (display " with an air quite desolate and chapfallen.\n")
+                  (R* (rnorm 10))
+                  (R (ls))
+                  (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
+                  (R* (seq -5 5 by: 0.2))))
+      'away!)
+    
+  #+END_SRC
+
+  Probably need an example-header that knows to e.g. ...; no, let's
+  have =@egg= instead of =@title=. We'll use the egg for title, and we
+  have the added benefit of knowing what the egg is called. This we
+  could eventually harvest from <egg>.meta, too.
+
+  Can we add this to the =wiki-write-block=?
+* DONE Minimum required for self-documentation
+  CLOSED: [2012-10-11 Thu 04:32]
+  At the very least, let's have a =@(source ...)= directive; we could
+  have =@(text ...)=, too, but we're going to fill it with
+  wiki-specific crap.
+
+  I'm yearning for =@(example ...)=.
+* DONE Ability to suppress internally documented functions.
+  CLOSED: [2012-10-11 Thu 04:33]
 # <<internal-functions>>
   Let's use =@internal=. Or: instead of =@<identifier>=, we should
   reuse the keyword mechanism? Principle of least surprise? Would look
@@ -412,5 +396,29 @@
         internal: #t))
     
   #+END_SRC
-* TODO Multiple authors (maintainer, &c.)
-  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* CANCELED Descriptions can take arbitrary directives?
+  CLOSED: [2012-10-11 Thu 04:32]
+  - CLOSING NOTE [2012-10-11 Thu 04:32] \\
+    Let's just special case e.g. @source.
+  If you want to e.g. include source; first element, therefore, a
+  list?
+
+  Or should we special-case =@source= in addition to =@example=? What
+  about =@header=?
+* CANCELED =parse-procedure=, &c. should be more than stubs.
+  CLOSED: [2012-10-11 Thu 04:33]
+  There's a lot of boilerplate work to be done there that we could
+  specialize for e.g. wiki and latex.
+* CANCELED Define an intermediate long-hand.
+  CLOSED: [2012-10-11 Thu 04:33]
+  If this, for instance, is our long-hand:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @(description: "Do something."
+        parameters: ((a "Thing to do"))
+        to: "Thing done")
+      (void))
+  #+END_SRC
+
+  we can come up with any number of short-hands that reduce to it.
