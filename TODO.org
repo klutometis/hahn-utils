@@ -1,6 +1,23 @@
+* DONE We're still getting parser-leakage!
+  CLOSED: [2012-10-11 Thu 04:02]
+  - CLOSING NOTE [2012-10-11 Thu 04:02] \\
+    Use =@(noop)= or similar.
+  #+BEGIN_SRC scheme :tangle out-of-sequence.scm
+    @(egg test)
+    @(noop)
+    (define x 2)
+    (define y @("For reals") 3)
+  #+END_SRC
+* TODO Descriptions can take arbitrary directives?
+  If you want to e.g. include source; first element, therefore, a
+  list?
+
+  Or should we special-case =@source= in addition to =@example=? What
+  about =@header=?
 * TODO Get metadata from egg.
   Authors, &c.
-* TODO Add a newline after =@(text ..)=.
+* DONE Add a newline after =@(text ..)=.
+  CLOSED: [2012-10-11 Thu 04:03]
 * TODO =@example=
   Everything should be able to take examples, even modules; examples
   should be as fundamental as source-code.
@@ -56,6 +73,13 @@
 
   #+BEGIN_SRC scheme :tangle test-example.scm
     @(egg R)
+    @(source (let ((x 2)) (+ 2 2)))
+    @(noop)
+    
+    (define harro
+      @("Wanted to say a lot here; but, ouch."
+        (@internal))
+      2)
     
     (define (frobnitz when ick)
       @("Crane, Ichabod"
@@ -100,7 +124,6 @@
   This is usually bin-specific, though; we'd put directives in the
   bin-file, then, wouldn't we: and couldn't we parse =args= while
   we're at it?
-* TODO We're still getting parser-leakage!
 * TODO =setup-helper=-like-thing we can call from setup.
 # <<setup-helper>>
   Would define a form =cock= on analogy with e.g. =compile=;
