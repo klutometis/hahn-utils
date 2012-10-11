@@ -161,7 +161,8 @@
 
 (define special-parameters
   (list (string->symbol "@to")
-        (string->symbol "@example")))
+        (string->symbol "@example")
+        (string->symbol "@internal")))
 
 (define (special-parameter? parameter)
   (memq parameter special-parameters))
@@ -194,6 +195,11 @@
        (filter (lambda (parameter)
                  (eq? (car parameter) (string->symbol "@example")))
                special-parameters)))
+
+(define (internal? special-parameters)
+  (any (lambda (parameter)
+         (eq? (car parameter) (string->symbol "@internal")))
+       special-parameters))
 
 (define (scalar-procedure? normal-parameters special-parameters)
   (or (not (null? normal-parameters))
