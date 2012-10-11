@@ -10,11 +10,8 @@
           fmt
           matchable
           miscmacros
-          posix
-          regex
           shell
           stack
-          usage
-          utils)
+          usage)
  (test-depends)
  (foreign-depends))
