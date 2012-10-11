@@ -170,7 +170,7 @@ EOF
       ;; markdown-to-wiki bullshit; maybe we can support a subset? I
       ;; really just want monospace and links.
       ((text)
-       (let ((text (string-join arguments "\n\n")))
+       (let ((text (string-join arguments "\n\n" 'suffix)))
          (lambda ()
            (display text)
            (newline))))
