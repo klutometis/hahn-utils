@@ -202,7 +202,11 @@
                      (string->symbol "@to")
                      '("unspecified")))
 
-(define (procedure-examples special-parameters)
+(define example-description car)
+
+(define example-expressions cdr)
+
+(define (examples special-parameters)
   (map cdr
        (filter (lambda (parameter)
                  (eq? (car parameter) (string->symbol "@example")))
