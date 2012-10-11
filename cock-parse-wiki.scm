@@ -154,6 +154,7 @@ EOF
          (lambda ()
            (hash-table-set! data 'heading-level 1)
            (display (wiki-subtitle title)))))
+      ((noop) void)
       ((subheading)
        (let ((title (car arguments)))
          (lambda ()
