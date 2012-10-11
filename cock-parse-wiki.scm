@@ -206,7 +206,7 @@ EOF
         ((null? expressions))
       (let ((expression (car expressions)))
         (fmt #t (columnar " " (with-width 78 (pretty expression))))
-        (fmt #t (columnar "  => " (with-width 78 (pretty (eval expression))))
+        (fmt #t (columnar "  => " (with-width 74 (pretty (eval expression))))
              " " nl)))))
 
 (define (write-wiki-source expression)
