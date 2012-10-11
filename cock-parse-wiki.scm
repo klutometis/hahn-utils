@@ -203,13 +203,8 @@ EOF
          (expressions expressions (cdr expressions)))
         ((null? expressions))
       (let ((expression (car expressions)))
-        (fmt #t (columnar " " (format "#;~a> " i) (pretty expression)))
-        (fmt #t (columnar (make-string (+ 6 (inexact->exact
-                                             (floor
-                                              (/ (log (+ i 1))
-                                                 (log 10)))))
-                                       #\space)
-                          (pretty (eval expression))))))))
+        (fmt #t (columnar " " (pretty expression)))
+        (fmt #t (columnar "  => " (pretty (eval expression))) " " nl)))))
 
 (define (write-wiki-block doc
                           expr
