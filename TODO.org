@@ -11,6 +11,8 @@
 
   #+BEGIN_SRC scheme :tangle example.scm :shebang #!/usr/bin/env chicken-scheme
     (use debug
+         environments
+         fmt
          numbers
          posix
          R
@@ -18,16 +20,14 @@
     
     (define (example description . body)
       (display description)
-      (receive (in out id)
-        (process "csi" '("-q" "-R" "R"))
-        (with-output-to-port out
-          (lambda ()
-            (for-each pp body)))
-        (close-output-port out)
-        (for-each (lambda (line)
-                    (display line)
-                    (newline)) 
-          (read-lines in))))
+      (let ((env (environment-copy (interaction-environment))))
+        (eval '(require-extension R) env)
+        (do ((i 1 (+ i 1))
+             (body body (cdr body))
+             (expression (car body) (car body)))
+            ((null? body))
+          (fmt #t (format "#;~a> " i) (pretty expression))
+          (fmt #t (pretty (eval expression env))))))
     
     (example "This is insanity"
              '(R* (ls))
@@ -55,7 +55,7 @@
   #+END_SRC
 
   #+BEGIN_SRC scheme :tangle test-example.scm
-    @(egg "R")
+    @(egg R)
     
     (define (frobnitz when ick)
       @("Crane, Ichabod"
@@ -63,10 +63,25 @@
         (ick "with the air of one who had been sacking a henroost, rather
     than a fair lady's heart")
         (@example "He goes over the mountain like this:"
-                  (display "Something, however ... must have gone wrong,")
-                  (display " for he certainly sallied forth,")
-                  (display " after no very great interval,")
-                  (display " with an air quite desolate and chapfallen.")))
+                  ;; "Something, however ... must have gone wrong,\n"
+                  ;; (display " for he certainly sallied forth,\n")
+                  ;; (display " after no very great interval,\n")
+                  ;; (display " with an air quite desolate and chapfallen.\n")
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  2
+                  (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
+                  (R* (seq -5 5 by: 0.2))
+                  (R* (seq -5 5 by: 0.2))))
       'away!)
     
   #+END_SRC
@@ -75,6 +90,8 @@
   have =@egg= instead of =@title=. We'll use the egg for title, and we
   have the added benefit of knowing what the egg is called. This we
   could eventually harvest from <egg>.meta, too.
+
+  Can we add this to the =wiki-write-block=?
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
