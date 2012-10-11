@@ -20,6 +20,7 @@ drivers then write docexprs as e.g. LaTeX.")
           stack)
   (use alist-lib
        debug
+       define-record-and-printer
        environments
        fmt
        irregex
