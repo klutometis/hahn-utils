@@ -251,27 +251,10 @@ EOF
           parameters)))
     (string-join parameters "\n")))
 
-(define (write-example data description body)
-  (let ((heading (wiki-make-current-heading data 1)))
-    (display (heading "Example"))
-    (display description)
-    (receive (in out id)
-      (process "csi" '("-q" "-R" "R"))
-      (with-output-to-port out
-        (lambda ()
-          (for-each pp body)))
-      (close-output-port out)
-      (for-each (lambda (line)
-                  (display " ")
-                  (display line)
-                  (newline)) 
-        (read-lines in)))))
-
 (define (wiki-parse-procedure doc expr data name formals)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (procedure-to special-parameters))
-          (examples (procedure-examples special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let ((procedure
              (make-wiki-procedure wiki-procedure name formals to))
             (parameters
@@ -282,10 +265,7 @@ EOF
                             data
                             name
                             procedure
-                            parameters)
-          (for-each (lambda (example)
-                      (write-example data (car example) (cdr example)))
-            examples))))))
+                            parameters))))))
 
 (define (wiki-parse-case-lambda doc expr data name formals+)
   (receive (normal-parameters special-parameters)
