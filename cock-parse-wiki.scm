@@ -217,24 +217,25 @@ EOF
                           name
                           item
                           . rest-items)
-  (let ((heading (wiki-make-current-heading data))
-        (description (wiki-make-description (doc-descriptions doc))))
-    (display (heading (wiki-monospace name)))
-    (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
-    (when (write-source?)
-      (display (wiki-source (with-output-to-string (lambda () (pp expr))))))
-    (receive (normal-parameters special-parameters)
-      (doc-normal-and-special-parameters doc)
-      (let ((examples (examples special-parameters)))
-        (unless (null? examples)
-          (let ((heading (wiki-make-current-heading data 1)))
-            (display (heading "Examples"))
-            (for-each (lambda (example)
-                        (write-example
-                         data
-                         (example-description example)
-                         (example-expressions example)))
-              examples)))))))
+  (receive (normal-parameters special-parameters)
+    (doc-normal-and-special-parameters doc)
+    (unless (internal? special-parameters)
+      (let ((heading (wiki-make-current-heading data))
+            (description (wiki-make-description (doc-descriptions doc))))
+        (display (heading (wiki-monospace name)))
+        (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
+        (when (write-source?)
+          (write-wiki-source expr))
+        (let ((examples (examples special-parameters)))
+          (unless (null? examples)
+            (let ((heading (wiki-make-current-heading data 1)))
+              (display (heading "Examples"))
+              (for-each (lambda (example)
+                          (write-example
+                           data
+                           (example-description example)
+                           (example-expressions example)))
+                examples))))))))
 
 ;;; Generalize this.
 (define (make-wiki-procedure template name formals to)
