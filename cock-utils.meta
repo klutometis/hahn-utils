@@ -5,6 +5,7 @@
  (depends alist-lib
           args
           debug
+          define-record-and-printer
           environments
           fmt
           matchable
