@@ -5,6 +5,8 @@
  (depends alist-lib
           args
           debug
+          environments
+          fmt
           matchable
           miscmacros
           posix

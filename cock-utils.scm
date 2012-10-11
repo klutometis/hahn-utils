@@ -20,6 +20,8 @@ drivers then write docexprs as e.g. LaTeX.")
           stack)
   (use alist-lib
        debug
+       environments
+       fmt
        irregex
        lolevel
        matchable
