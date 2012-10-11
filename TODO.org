@@ -67,20 +67,9 @@
                   ;; (display " for he certainly sallied forth,\n")
                   ;; (display " after no very great interval,\n")
                   ;; (display " with an air quite desolate and chapfallen.\n")
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
-                  2
+                  (R* (rnorm 10))
+                  (R (ls))
                   (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
-                  (R* (seq -5 5 by: 0.2))
                   (R* (seq -5 5 by: 0.2))))
       'away!)
     
