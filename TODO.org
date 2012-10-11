@@ -15,10 +15,6 @@
       @("Sort of"
         (qux "Yes, wirklich")))
   #+END_SRC
-* TODO Groff output for man-pages?
-  This is usually bin-specific, though; we'd put directives in the
-  bin-file, then, wouldn't we: and couldn't we parse =args= while
-  we're at it?
 * TODO =setup-helper=-like-thing we can call from setup.
 # <<setup-helper>>
   Would define a form =cock= on analogy with e.g. =compile=;
@@ -26,6 +22,10 @@
   given no files, picks up all =.scm= in the directory?
 
   Would be nice if it could default to e.g. =<egg-name>.wiki=.
+* TODO Groff output for man-pages?
+  This is usually bin-specific, though; we'd put directives in the
+  bin-file, then, wouldn't we: and couldn't we parse =args= while
+  we're at it?
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
 * TODO Changelog
