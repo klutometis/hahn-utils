@@ -200,7 +200,7 @@ EOF
   (let ((env (environment-copy (interaction-environment) #t))
         (egg (hash-table-ref/default data 'egg #f)))
     ;; We can't seem to use `use' with env.
-    (when egg (eval `(require-extension ,egg)))
+    (when egg (eval `(require-extension ,(string->symbol egg))))
     (do ((i 1 (+ i 1))
          (expressions expressions (cdr expressions)))
         ((null? expressions))
