@@ -175,7 +175,7 @@ EOF
            (display text)
            (newline))))
       (else
-       (lambda () (warning "wiki-parse-directive -- Unknown directive" directive))))))
+       (lambda () (warning "Unknown directive" directive))))))
 
 (define (wiki-make-heading heading-level)
   (match heading-level
