@@ -162,6 +162,7 @@
 (define special-parameters
   (list (string->symbol "@to")
         (string->symbol "@example")
+        (string->symbol "@example-no-eval")
         (string->symbol "@internal")))
 
 (define (special-parameter? parameter)
@@ -194,6 +195,12 @@
   (map cdr
        (filter (lambda (parameter)
                  (eq? (car parameter) (string->symbol "@example")))
+               special-parameters)))
+
+(define (examples-no-eval special-parameters)
+  (map cdr
+       (filter (lambda (parameter)
+                 (eq? (car parameter) (string->symbol "@example-no-eval")))
                special-parameters)))
 
 (define (internal? special-parameters)

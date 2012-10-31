@@ -1,3 +1,4 @@
+* TODO Things like =@example-no-eval= should be done with flags.
 * TODO Formalize =@noop=.
 * TODO Bring "Examples" down to the lowest heading.
 * TODO Get metadata from egg.

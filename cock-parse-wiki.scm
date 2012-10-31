@@ -147,6 +147,8 @@ EOF
        void)
       ((example)
        (lambda () (write-example data (car arguments) (cdr arguments))))
+      ((example-no-eval)
+       (lambda () (write-example-no-eval data (car arguments) (cdr arguments))))
       ((source)
        (lambda () (write-wiki-source (car arguments))))
       ((heading)
@@ -202,13 +204,22 @@ EOF
         (egg (hash-table-ref/default data 'egg #f)))
     ;; We can't seem to use `use' with env.
     (when egg (eval `(require-extension ,(string->symbol egg))))
-    (do ((i 1 (+ i 1))
-         (expressions expressions (cdr expressions)))
-        ((null? expressions))
-      (let ((expression (car expressions)))
-        (fmt #t (columnar " " (with-width 78 (pretty expression))))
-        (fmt #t (columnar "  => " (with-width 74 (pretty (eval expression))))
-             " " nl)))))
+    (for-each (lambda (expression)
+                (fmt #t (columnar " " (with-width 78 (pretty expression))))
+                (fmt #t (columnar "  => " (with-width 74 (pretty (eval expression))))
+                     " " nl))
+      expressions)))
+
+(define (write-example-no-eval data description expressions)
+  (display description)
+  (newline)
+  (let ((env (environment-copy (interaction-environment) #t))
+        (egg (hash-table-ref/default data 'egg #f)))
+    ;; We can't seem to use `use' with env.
+    (when egg (eval `(require-extension ,(string->symbol egg))))
+    (for-each (lambda (expression)
+                (fmt #t (columnar " " (with-width 78 (pretty expression)))))
+      expressions)))
 
 (define (write-wiki-source expression)
   (display (wiki-source (with-output-to-string (lambda () (pp expression))))))
@@ -228,8 +239,9 @@ EOF
         (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
         (when (write-source?)
           (write-wiki-source expr))
-        (let ((examples (examples special-parameters)))
-          (unless (null? examples)
+        (let ((examples (examples special-parameters))
+              (examples-no-eval (examples-no-eval special-parameters)))
+          (unless (and (null? examples) (null? examples-no-eval))
             (let ((heading (wiki-make-current-heading data 1)))
               (display (heading "Examples"))
               (for-each (lambda (example)
@@ -237,7 +249,13 @@ EOF
                            data
                            (example-description example)
                            (example-expressions example)))
-                examples))))))))
+                examples)
+              (for-each (lambda (example-no-eval)
+                          (write-example-no-eval
+                           data
+                           (example-description example-no-eval)
+                           (example-expressions example-no-eval)))
+                examples-no-eval))))))))
 
 ;;; Generalize this.
 (define (make-wiki-procedure template name formals to)
