@@ -156,6 +156,8 @@ EOF
          (lambda ()
            (hash-table-set! data 'heading-level 1)
            (display (wiki-subtitle title)))))
+      ;; Should we pop the expression stack at this point? Maybe,
+      ;; maybe not. @noop-and-pop? Jesus.
       ((noop) void)
       ((subheading)
        (let ((title (car arguments)))
