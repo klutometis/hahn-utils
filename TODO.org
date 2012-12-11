@@ -1,3 +1,5 @@
+* TODO Clearly demarcate source code.
+  I keep thinking it's an example but end up getting clowned.
 * TODO Things like =@example-no-eval= should be done with flags.
 * TODO Formalize =@noop=.
 * TODO Bring "Examples" down to the lowest heading.
