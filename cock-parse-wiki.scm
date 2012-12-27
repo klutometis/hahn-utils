@@ -215,13 +215,9 @@ EOF
 (define (write-example-no-eval data description expressions)
   (display description)
   (newline)
-  (let ((env (environment-copy (interaction-environment) #t))
-        (egg (hash-table-ref/default data 'egg #f)))
-    ;; We can't seem to use `use' with env.
-    (when egg (eval `(require-extension ,(string->symbol egg))))
-    (for-each (lambda (expression)
-                (fmt #t (columnar " " (with-width 78 (pretty expression)))))
-      expressions)))
+  (for-each (lambda (expression)
+              (fmt #t (columnar " " (with-width 78 (pretty expression)))))
+    expressions))
 
 (define (write-wiki-source expression)
   (display (wiki-source (with-output-to-string (lambda () (pp expression))))))
