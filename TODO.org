@@ -1,3 +1,4 @@
+* TODO Still getting segfaults on eval
 * TODO Clearly demarcate source code.
   I keep thinking it's an example but end up getting clowned.
 * TODO Things like =@example-no-eval= should be done with flags.
