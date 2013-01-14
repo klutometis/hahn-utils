@@ -1,3 +1,9 @@
+* TODO Add the ability to do generic procedures not associated with code.
+  E.g. just a naked =@(procedure for-instance "For instance" (x
+  "This") (y "That"))=.
+* TODO Add the ability to document e.g. constructors in records.
+* TODO Add a =@nosource= directive.
+* TODO Find some way to demarcate the source-block.
 * TODO Still getting segfaults on eval
 * TODO Clearly demarcate source code.
   I keep thinking it's an example but end up getting clowned.
@@ -312,15 +318,18 @@
         (when "A tête-à-tête with the heiress")
         (ick "with the air of one who had been sacking a henroost, rather
     than a fair lady's heart")
-        (@example "He goes over the mountain like this:"
-                  ;; "Something, however ... must have gone wrong,\n"
-                  ;; (display " for he certainly sallied forth,\n")
-                  ;; (display " after no very great interval,\n")
-                  ;; (display " with an air quite desolate and chapfallen.\n")
-                  (R* (rnorm 10))
-                  (R (ls))
-                  (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
-                  (R* (seq -5 5 by: 0.2))))
+        (@no-source)
+        (@example-no-eval
+         "He goes over the mountain like this:"
+         "Something, however ... must have gone wrong,\n"
+         (display " for he certainly sallied forth,\n")
+         (display " after no very great interval,\n")
+         (display " with an air quite desolate and chapfallen.\n")
+         ;; (R* (rnorm 10))
+         ;; (R (ls))
+         ;; (R* (ls envir: .BaseNamespaceEnv all.names: #t pattern: "qr.*"))
+         ;; (R* (seq -5 5 by: 0.2))
+         ))
       'away!)
     
   #+END_SRC
