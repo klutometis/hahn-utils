@@ -160,10 +160,11 @@
   (display (apply substitute-template keys-or-substitutions)))
 
 (define special-parameters
-  (list (string->symbol "@to")
-        (string->symbol "@example")
+  (list (string->symbol "@example")
         (string->symbol "@example-no-eval")
-        (string->symbol "@internal")))
+        (string->symbol "@internal")
+        (string->symbol "@no-source")
+        (string->symbol "@to")))
 
 (define (special-parameter? parameter)
   (memq parameter special-parameters))
@@ -206,6 +207,11 @@
 (define (internal? special-parameters)
   (any (lambda (parameter)
          (eq? (car parameter) (string->symbol "@internal")))
+       special-parameters))
+
+(define (no-source? special-parameters)
+  (any (lambda (parameter)
+         (eq? (car parameter) (string->symbol "@no-source")))
        special-parameters))
 
 (define (scalar-procedure? normal-parameters special-parameters)
