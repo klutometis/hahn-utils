@@ -1,3 +1,5 @@
+* TODO Get metadata from egg.
+  Authors, License, &c.
 * TODO Add the ability to do generic procedures not associated with code.
   E.g. just a naked =@(procedure for-instance "For instance" (x
   "This") (y "That"))=.
@@ -10,8 +12,6 @@
 * TODO Things like =@example-no-eval= should be done with flags.
 * TODO Formalize =@noop=.
 * TODO Bring "Examples" down to the lowest heading.
-* TODO Get metadata from egg.
-  Authors, &c.
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
@@ -42,7 +42,6 @@
   An HTML driver is useful, unfortunately, for e.g. github-pages.
 * TODO Changelog
 * TODO Repository
-* TODO License
 * TODO =pre-post-order=
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
