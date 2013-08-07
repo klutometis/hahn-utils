@@ -1,4 +1,11 @@
+* TODO Need version history and license
+  See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
+  the git-tags? Assumes that we’re in a git repo.
+
+  License is simply part of the metadata; maybe we should get it from
+  the [[egg]], after all.
 * TODO Get metadata from egg.
+# <<egg>>
   Authors, License, &c.
 * TODO Add the ability to do generic procedures not associated with code.
   E.g. just a naked =@(procedure for-instance "For instance" (x
