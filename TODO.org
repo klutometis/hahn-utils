@@ -1,3 +1,74 @@
+* TODO Iterate through =revisions= in =.release-info=.
+  Try to glean some information from the optional repo: is it e.g.
+  git, svn? Extract the info.
+
+  Otherwise, use a =@(release “tag” “message”)= directive.
+
+  #+BEGIN_SRC scheme
+    (use debug
+         html-parser
+         matchable
+         posix
+         shell
+         sxml-transforms)
+    
+    ;;; Is this sufficient? Seems we have to go up; and, even then, it may
+    ;;; be misleading: might be in an unversion directory in some other,
+    ;;; unrelated project.
+    ;;;
+    ;;; Might have to specify the repo, after all?
+    (define (git-repo?) (directory-exists? ".git"))
+    (define (svn-repo?) (directory-exists? ".svn"))
+    (define (hg-repo?) (directory-exists? ".hg"))
+    (define (fossil-repo?) (directory-exists? ".fslckout"))
+    
+    (define (git-message tag)
+      (match (string-tokenize (capture (git tag -l ,tag -n1)))
+        ((tag . message) (string-join message))
+        (_ #f)))
+    
+    (define (svn-message tag)
+      (with-input-from-string (capture (svn -v --stop-on-copy ,(format "tags/~a" tag)))
+        pp))
+    
+    (define (with-working-directory directory thunk)
+      (let ((original-directory (current-directory)))
+        (dynamic-wind (lambda () (current-directory directory))
+            thunk
+            (lambda () (current-directory original-directory)))))
+    
+    (with-working-directory "~/src/chicken-eggs/chicken-doc/trunk/"
+      (lambda ()
+        (let ((release-info (glob "*.release-info")))
+          (unless (null? release-info)
+            (with-input-from-file (car release-info)
+              (lambda ()
+                (let ((message (cond ((git-repo?) git-message)
+                                     ((svn-repo?) svn-message)
+                                     (else #f))))
+                  (when message
+                    (do ((object (read) (read)))
+                        ((eof-object? object))
+                      (match object
+                        (('release release)
+                         (debug (message release)))
+                        (_)))))))))))
+  #+END_SRC
+
+  More and more, it’s looking like we’ll have to have access to the
+  egg dir itself; if it’s not in =(current-directory)=. There, we can
+  find things like =.meta=, =.release-info=, &c.; and determine
+  whether or not it’s a repo.
+
+  This, as opposed to a manifold of choices.
+
+  You know what, though? That’s a pain in the ass; can we please
+  mandate current working directory?
+
+  Or do we want all the commit messages that belong to that tag and
+  call it a changelog?
+
+  See [[http://stackoverflow.com/questions/8136178/git-log-between-tags][this]] for git; [[http://www.bernzilla.com/item.php?id%3D613][this]] for svn; this could be a verbose option?
 * TODO =@(noop)= is ugly.
 * TODO Copyright?
 * TODO Module-awareness?
