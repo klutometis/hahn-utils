@@ -416,26 +416,35 @@ EOF
     parsed-docexprs))
 
 ;;; Needs to be generalized.
-(define (wiki-write-docexprs docexprs)
+(define wiki-write-docexprs
   @("Write the source-derived docexprs as svnwiki."
     (docexprs "The parsed docexprs"))
-  (let* ((document (make-document (make-hash-table) (make-stack)))
-         (parsed-docexprs (wiki-parse-docexprs document docexprs)))
-    (let ((data (document-data document)))
-      (let ((author
-             (hash-table-ref/default data 'author "Anonymous"))
-            (username
-             (hash-table-ref/default data 'username "anonymous"))
-            (email
-             (hash-table-ref/default data 'email "anonymous@example.com"))
-            (title
-             (let ((title (hash-table-ref/default data 'egg #f))
-                   (egg (hash-table-ref/default data 'egg #f)))
-               (cond (title title)
-                     (egg egg)
-                     (else "title"))))
-            (description
-             (hash-table-ref/default data 'description "Description")))
-        (display (wiki-preamble title description))
-        (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
-        (display (wiki-postamble author username))))))
+  (case-lambda
+   ((docexprs) (wiki-write-docexprs docexprs #f))
+   ((docexprs metafile)
+    (let* ((document (make-document (make-hash-table) (make-stack)))
+           (parsed-docexprs (wiki-parse-docexprs document docexprs)))
+      (let ((data (hash-table-merge (document-data document)
+                                    (parse-metafile metafile))))
+        (debug (hash-table->alist data))
+        (let ((author
+               (hash-table-ref/default data 'author (default-author)))
+              (username
+               (or
+                (hash-table-ref/default data 'username #f)
+                (hash-table-ref/default data 'user (default-user))))
+              (email
+               (hash-table-ref/default data 'email (default-email)))
+              (repository
+               (or
+                (hash-table-ref/default data 'repository #f)
+                (hash-table-ref/default data 'repo #f)))
+              (title
+               (let ((title (hash-table-ref/default data 'title #f))
+                     (egg (hash-table-ref/default data 'egg #f)))
+                 (and title egg (default-title))))
+              (description
+               (hash-table-ref/default data 'description (default-synopsis))))
+          (display (wiki-preamble title description))
+          (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+          (display (wiki-postamble author username))))))))

@@ -468,22 +468,25 @@
                     (tex-parse-docexpr document docexpr))))
     parsed-docexprs))
 
-(define (tex-write-docexprs docexprs)
+(define tex-write-docexprs
   @("Write the source-derived docexprs as LaTeX."
     (docexprs "The parsed docexprs"))
-  (let* ((document (make-document (make-hash-table) (make-stack)))
-         (parsed-docexprs (tex-parse-docexprs document docexprs)))
-    (let ((data (document-data document)))
-      (write-template
-       tex-preamble
-       `((author . ,(hash-table-ref/default data
-                                            'author
-                                            "Anonymous"))
-         (email . ,(hash-table-ref/default data
-                                           'email
-                                           "anonymous@example.org"))
-         (title . ,(hash-table-ref/default data
-                                           'title
-                                           "Documentation")))))
-    (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
-    (display tex-footer)))
+  (case-lambda
+   ((docexprs) (tex-write-docexprs docexprs #f))
+   ((docexprs metafile)
+    (let* ((document (make-document (make-hash-table) (make-stack)))
+           (parsed-docexprs (tex-parse-docexprs document docexprs)))
+      (let ((data (document-data document)))
+        (write-template
+         tex-preamble
+         `((author . ,(hash-table-ref/default data
+                                              'author
+                                              "Anonymous"))
+           (email . ,(hash-table-ref/default data
+                                             'email
+                                             "anonymous@example.org"))
+           (title . ,(hash-table-ref/default data
+                                             'title
+                                             "Documentation")))))
+      (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+      (display tex-footer)))))
