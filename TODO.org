@@ -1,8 +1,30 @@
+* TODO Copyright?
+* TODO Module-awareness?
+* TODO Author and repository should go first.
+  See [[http://wiki.call-cc.org/eggref/4/salmonella][here]].
 * TODO Have some default rule for including unknown metadata.
 * TODO Optional descriptions for examples?
 * TODO Versions
   Parse =*.release-info= to get the versions; look up said tags for
   git, svn, hg, &c.
+
+  #+BEGIN_SRC scheme
+    (use shell)
+    
+    (capture (git tag -l -n1))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (use debug
+         git
+         srfi-13)
+    
+    (let* ((repo (repository-open))
+           (tags (tags repo)))
+      (map (lambda (tag) (cons (tag-name tag)
+                          (string-trim-both (tag-message tag))))
+           tags))
+  #+END_SRC
 * TODO Find a canonical egg to imitate.
   Or, just do a survey for how to handle e.g. dependencies, versions.
 * TODO Pull things out of the metafile.
