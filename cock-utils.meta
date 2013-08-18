@@ -12,6 +12,7 @@
           matchable
           miscmacros
           shell
+          srfi-95
           stack
           usage)
  (test-depends)
