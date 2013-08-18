@@ -119,8 +119,7 @@ EOF
       (wiki-subsubtitle "License")
       license)
      "")
-#(if (or (not dependencies)
-         (null? dependencies))
+#(if (null? dependencies)
      ""
      (string-append
       (wiki-subsubtitle "Dependencies")
@@ -130,8 +129,7 @@ EOF
             dependencies)
        "* "
        'prefix)))
-#(if (or (not versions)
-         (null? versions))
+#(if (null? versions)
      ""
      (string-append
       (wiki-subsubtitle "Versions")
@@ -493,7 +491,7 @@ EOF
               (license
                (hash-table-ref/default data 'license #f))
               (versions
-               (hash-table-ref/default data 'versions #f)))
+               (hash-table-ref/default data 'versions '())))
           (display (wiki-preamble title description))
           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
           (display (wiki-postamble author
