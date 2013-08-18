@@ -255,6 +255,24 @@
   (let ((metafiles (glob "*.meta")))
     (and metafiles (car metafiles))))
 
+(define (repo-metadata repo)
+  (let ((metadata (make-hash-table)))
+    (handle-exceptions exn
+      metadata
+      (let* ((repo (if repo
+                       (repository-open repo)
+                       (repository-open)))
+             (tags (tags repo)))
+        (hash-table-set! metadata
+                         'versions
+                         (sort
+                          (map (lambda (tag) (cons (tag-name tag)
+                                              (tag-message tag)))
+                               tags)
+                          string<?
+                          car))
+        metadata))))
+
 (define parse-metafile
   (case-lambda
    (() (parse-metafile (find-metafile)))
