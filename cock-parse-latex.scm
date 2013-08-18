@@ -473,7 +473,8 @@
     (docexprs "The parsed docexprs"))
   (case-lambda
    ((docexprs) (tex-write-docexprs docexprs #f))
-   ((docexprs metafile)
+   ((docexprs metafile) (tex-write-docexprs docexprs #f #f))
+   ((docexprs metafile repo)
     (let* ((document (make-document (make-hash-table) (make-stack)))
            (parsed-docexprs (tex-parse-docexprs document docexprs)))
       (let ((data (document-data document)))
