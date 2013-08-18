@@ -301,3 +301,14 @@
                                     (hash-table-set! metadata key rest))))
               egg-data))))
       metadata))))
+
+(define (with-working-directory directory thunk)
+  @("Change to the {{directory}}, execute {{thunk}}, change back;
+returns the value of executing {{thunk}}."
+    (directory "The directory to switch to")
+    (thunk "The thunk to execute")
+    (@to "object"))
+  (let ((original-directory (current-directory)))
+    (dynamic-wind (lambda () (current-directory directory))
+        thunk
+        (lambda () (current-directory original-directory)))))

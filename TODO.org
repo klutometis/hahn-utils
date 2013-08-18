@@ -5,31 +5,60 @@
   Otherwise, use a =@(release “tag” “message”)= directive.
 
   #+BEGIN_SRC scheme
-    (use debug
+    (use alist-lib
+         debug
          html-parser
          matchable
          posix
          shell
-         sxml-transforms)
+         sxml-transforms
+         sxpath)
+    
+    (define (node-children node)
+      ((sxpath '((*not* @))) node))
+        
+    (define (node-attributes node)
+      ((sxpath '(@)) node))
+    
+    (define-syntax translate
+      (ir-macro-transformer
+       (lambda (expression inject compare)
+         `(lambda ,(inject 'tag)
+            (let ((,(inject 'children) (node-children ,(inject 'tag)))
+                  (,(inject 'attributes) (node-attributes ,(inject 'tag))))
+              ,@(cdr expression))))))
     
     ;;; Is this sufficient? Seems we have to go up; and, even then, it may
     ;;; be misleading: might be in an unversion directory in some other,
     ;;; unrelated project.
     ;;;
     ;;; Might have to specify the repo, after all?
-    (define (git-repo?) (directory-exists? ".git"))
-    (define (svn-repo?) (directory-exists? ".svn"))
-    (define (hg-repo?) (directory-exists? ".hg"))
-    (define (fossil-repo?) (directory-exists? ".fslckout"))
+    (define (git-repo?) (zero? (run* (git status))))
+    (define (svn-repo?) (zero? (run* (svn info))))
+    (define (hg-repo?) (zero? (run* (hg status))))
+    (define (fossil-repo?) (zero? (run* (fossil status))))
     
     (define (git-message tag)
       (match (string-tokenize (capture (git tag -l ,tag -n1)))
         ((tag . message) (string-join message))
         (_ #f)))
     
-    (define (svn-message tag)
-      (with-input-from-string (capture (svn -v --stop-on-copy ,(format "tags/~a" tag)))
-        pp))
+    (define (svn-tags)
+      (with-input-from-string
+          (capture (svn log --stop-on-copy --xml ,(format "tags/~a" tag)))
+        (lambda ()
+          (let ((output (html->sxml)))
+            (with-output-to-string
+              (lambda ()
+                (SRV:send-reply
+                 (pre-post-order
+                  output
+                  `((*TOP* . ,(translate children))
+                    (log . ,(translate children))
+                    (logentry . ,(translate children))
+                    (msg *preorder* .
+                         ,(translate ((sxpath '(*text*)) tag)))
+                    (*default* . ,(translate '())))))))))))
     
     (define (with-working-directory directory thunk)
       (let ((original-directory (current-directory)))
@@ -37,22 +66,40 @@
             thunk
             (lambda () (current-directory original-directory)))))
     
-    (with-working-directory "~/src/chicken-eggs/chicken-doc/trunk/"
-      (lambda ()
-        (let ((release-info (glob "*.release-info")))
-          (unless (null? release-info)
-            (with-input-from-file (car release-info)
-              (lambda ()
-                (let ((message (cond ((git-repo?) git-message)
-                                     ((svn-repo?) svn-message)
-                                     (else #f))))
-                  (when message
-                    (do ((object (read) (read)))
-                        ((eof-object? object))
-                      (match object
-                        (('release release)
-                         (debug (message release)))
-                        (_)))))))))))
+    (define repo-type->message
+      `((git . ,git-message)
+        (svn . ,svn-message)
+        (hg . ,(constantly #f))
+        (fossil . ,(constantly #f))))
+    
+    (let ((eggdir "~/src/chicken-eggs/chicken-doc/trunk/")
+          (repo "~/src/chicken-eggs/chicken-doc/")
+          (repo-type 'svn))
+      (with-working-directory eggdir
+          (lambda ()
+            (let ((release-info (glob "*.release-info"))
+                  (repo-message (if repo-type
+                                    (alist-ref/default
+                                     repo-type->message
+                                     repo-type
+                                     (constantly #f))
+                                    (cond ((git-repo?) git-message)
+                                          ((svn-repo?) svn-message)
+                                          (constantly #f)))))
+              (unless (null? release-info)
+                (with-input-from-file (car release-info)
+                  (lambda ()
+                    (with-working-directory repo
+                      (lambda ()
+                        (debug
+                         (do ((object (read) (read))
+                              (release-message '() (cons object release-message)))
+                             ((eof-object? object))
+                           (match object
+                             (('release release)
+                              (debug repo-message (repo-message release))
+                              (cons release (repo-message release)))
+                             (_)))))))))))))
   #+END_SRC
 
   More and more, it’s looking like we’ll have to have access to the
@@ -69,6 +116,58 @@
   call it a changelog?
 
   See [[http://stackoverflow.com/questions/8136178/git-log-between-tags][this]] for git; [[http://www.bernzilla.com/item.php?id%3D613][this]] for svn; this could be a verbose option?
+
+  For the time being, let’s allow the specification of command-line
+  driven heuristics, should the detection fail.
+
+  Problem is, =cock= expects to be run from the root of the egg; the
+  repo-heuristics, on the other hand, from the repo root. In the case
+  of e.g. =svn=, those diverge.
+
+  =cock --svn=..=, for instance; since in e.g.
+  =chicken-eggs/chicken-doc/trunk=, a generic =cock --repo=..= will
+  fail.
+
+  Or, fuck it: use things like the return value of =svn status=.
+
+  #+BEGIN_SRC scheme
+    (use debug
+         shell
+         sxml-transforms
+         sxpath)
+    
+    (define (node-children node)
+      ((sxpath '((*not* @))) node))
+        
+    (define (node-attributes node)
+      ((sxpath '(@)) node))
+    
+    (define-syntax translate
+      (ir-macro-transformer
+       (lambda (expression inject compare)
+         `(lambda ,(inject 'tag)
+            (let ((,(inject 'children) (node-children ,(inject 'tag)))
+                  (,(inject 'attributes) (node-attributes ,(inject 'tag))))
+              ,@(cdr expression))))))
+    
+    (with-input-from-string
+        (capture (svn log -v --stop-on-copy --xml "~/src/chicken-eggs/chicken-doc/tags"))
+      (lambda ()
+        (let ((output (html->sxml)))
+          ;; (debug output)
+          (pre-post-order
+           output
+           `((*TOP* . ,(translate children))
+             (log . ,(translate children))
+             (logentry *preorder* . ,(translate
+                                      (let ((paths ((sxpath '(paths path)) tag))
+                                            (msg ((sxpath '(msg)) tag)))
+                                        (debug msg
+                                               paths
+                                               ((sxpath '(@ (action)))
+                                                (car paths))))))
+             (*default* . ,(translate '())))))))
+  #+END_SRC
 * TODO =@(noop)= is ugly.
 * TODO Copyright?
 * TODO Module-awareness?

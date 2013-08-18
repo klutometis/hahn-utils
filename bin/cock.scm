@@ -33,12 +33,6 @@
 (define (option options option)
   (alist-ref/default options option #f))
 
-(define (with-working-directory directory thunk)
-  (let ((original-directory (current-directory)))
-    (dynamic-wind (lambda () (current-directory directory))
-        thunk
-        (lambda () (current-directory original-directory)))))
-
 (receive (options files)
   (args:parse (command-line-arguments) (options))
   ;; Let's abstract these.

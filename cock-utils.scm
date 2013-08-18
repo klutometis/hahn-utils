@@ -10,7 +10,8 @@ creating docexprs (see below) from documented sources code; the
 drivers then write docexprs as e.g. wiki, LaTeX.")
   (parse-files
    tex-write-docexprs
-   wiki-write-docexprs)
+   wiki-write-docexprs
+   with-working-directory)
   (import chicken
           data-structures
           extras
