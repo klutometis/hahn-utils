@@ -15,6 +15,7 @@
   (make-parameter
    (list (args:make-option (h ? help) #:none "Help" (set! arg #t))
          (args:make-option (l latex) #:none "Output to LaTeX" (set! arg #t))
+         (args:make-option (m meta-file) (required: "METAFILE") "The egg's METAFILE")
          (args:make-option (o output) (required: "FILE") "Output to FILE")
          (args:make-option (p pdf) #:none "Output to PDF" (set! arg #t))
          (args:make-option (w wiki) #:none "Output to wiki [default]" (set! arg #t)))))
@@ -42,6 +43,7 @@
   ;; Let's abstract these.
   (let ((help? (option options 'help))
         (latex? (option options 'latex))
+        (metafile (option options 'metafile))
         (output (option options 'output))
         (pdf? (option options 'pdf)))
     (cond (help? (usage))
