@@ -1,137 +1,11 @@
+* TODO =@(noop)= is ugly.
 * TODO Copyright?
 * TODO Module-awareness?
 * TODO Author and repository should go first.
   See [[http://wiki.call-cc.org/eggref/4/salmonella][here]].
-* TODO Have some default rule for including unknown metadata.
 * TODO Optional descriptions for examples?
-* TODO Versions
-  Parse =*.release-info= to get the versions; look up said tags for
-  git, svn, hg, &c.
-
-  #+BEGIN_SRC scheme
-    (use shell)
-    
-    (capture (git tag -l -n1))
-  #+END_SRC
-
-  #+BEGIN_SRC scheme
-    (use debug
-         git
-         srfi-13)
-    
-    (let* ((repo (repository-open))
-           (tags (tags repo)))
-      (map (lambda (tag) (cons (tag-name tag)
-                          (string-trim-both (tag-message tag))))
-           tags))
-  #+END_SRC
 * TODO Find a canonical egg to imitate.
   Or, just do a survey for how to handle e.g. dependencies, versions.
-* TODO Pull things out of the metafile.
-  See [[http://wiki.call-cc.org/Metafile%2520reference][here]]; includes:
-
-  - Synopsis
-  - Author
-  - Maintainer
-  - Files
-  - License
-  - Category
-  - Needs
-    - Why not include a link, too?
-  - Depends
-  - Test-depends
-  - Hidden
-  - Platform
-  - Foreign-depends
-
-  Too bad we can’t get the name of the egg from the =.meta=; what
-  about the name of the metafile itself?
-
-  Can we do away with the cock-preamble altogether? User and email
-  might be tricky.
-
-  Also =repository=: see [[http://api.call-cc.org/doc/pseudo-meta-egg-info][here]].
-
-  #+BEGIN_SRC scheme
-    (use alist-lib
-         debug
-         irregex
-         matchable
-         posix
-         srfi-69)
-    
-    (define default-synopsis (make-parameter '("Egg synopsis")))
-    (define default-author (make-parameter '("Anonymous")))
-    (define default-category (make-parameter '("uncategorized")))
-    
-    (define (pair?-or-car value)
-      (and (pair? value) (car value)))
-    
-    (define (maybe-update-metadata! metadata egg-data keys)
-      (define (update-metadatum! key new-key map default)
-        (let ((value (alist-ref/default egg-data key default)))
-          (when value
-            (hash-table-set! metadata
-                             new-key
-                             (map value)))))
-      (for-each (match-lambda ((key)
-                          (update-metadatum! key key pair?-or-car #f))
-                         ((key new-key)
-                          (update-metadatum! key new-key pair?-or-car #f))
-                         ((key new-key map)
-                          (update-metadatum! key new-key map #f))
-                         ((key new-key map default)
-                          (update-metadatum! key new-key map default)))
-        keys))
-    
-    (define (find-metafile)
-      (let ((metafiles (glob "*.meta")))
-        (and metafiles (car metafiles))))
-    
-    (define parse-metafile
-      (case-lambda
-       (() (parse-metafile (find-metafile)))
-       ((metafile)
-        (let ((metafile (and metafile (find-metafile)))
-              (metadata (make-hash-table)))
-          (when metafile
-            (and-let* ((egg-match
-                        (irregex-match
-                         '(: (=> egg-name (* any)) ".meta")
-                         metafile))
-                       (egg-name
-                        (irregex-match-substring
-                         egg-match
-                         'egg-name)))
-              (let ((egg-data (with-input-from-file metafile read)))
-                (maybe-update-metadata!
-                 metadata
-                 egg-data
-                 `((synopsis description ,pair?-or-car ,(default-synopsis))
-                   (author author ,pair?-or-car ,(default-author))
-                   (maintainer)
-                   (files)
-                   (license)
-                   (category category ,pair?-or-car ,(default-category))
-                   (needs depends ,values)
-                   (depends depends ,values)
-                   (test-depends test-depends ,values)
-                   (hidden hidden ,null?)
-                   (platform)
-                   (foreign-depends foreign-depends ,values))))))
-          metadata))))
-    
-    (debug (hash-table->alist (parse-metafile)))
-  #+END_SRC
-* TODO Need version history and license
-  See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
-  the git-tags? Assumes that we’re in a git repo.
-
-  License is simply part of the metadata; maybe we should get it from
-  the [[egg]], after all.
-* TODO Get metadata from egg.
-# <<egg>>
-  Authors, License, &c.
 * TODO Add the ability to do generic procedures not associated with code.
   E.g. just a naked =@(procedure for-instance "For instance" (x
   "This") (y "That"))=.
@@ -172,8 +46,6 @@
   we're at it?
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
-* TODO Changelog
-* TODO Repository
 * TODO =pre-post-order=
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
@@ -368,6 +240,142 @@
   Maybe this can be an extension.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE Have some default rule for including unknown metadata.
+  CLOSED: [2013-08-18 Sun 03:04]
+* DONE Versions
+  CLOSED: [2013-08-18 Sun 03:04]
+  Parse =*.release-info= to get the versions; look up said tags for
+  git, svn, hg, &c.
+
+  #+BEGIN_SRC scheme
+    (use shell)
+    
+    (capture (git tag -l -n1))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (use debug
+         git
+         srfi-13)
+    
+    (let* ((repo (repository-open))
+           (tags (tags repo)))
+      (map (lambda (tag) (cons (tag-name tag)
+                          (string-trim-both (tag-message tag))))
+           tags))
+  #+END_SRC
+* DONE Pull things out of the metafile.
+  CLOSED: [2013-08-18 Sun 03:04]
+  See [[http://wiki.call-cc.org/Metafile%2520reference][here]]; includes:
+
+  - Synopsis
+  - Author
+  - Maintainer
+  - Files
+  - License
+  - Category
+  - Needs
+    - Why not include a link, too?
+  - Depends
+  - Test-depends
+  - Hidden
+  - Platform
+  - Foreign-depends
+
+  Too bad we can’t get the name of the egg from the =.meta=; what
+  about the name of the metafile itself?
+
+  Can we do away with the cock-preamble altogether? User and email
+  might be tricky.
+
+  Also =repository=: see [[http://api.call-cc.org/doc/pseudo-meta-egg-info][here]].
+
+  #+BEGIN_SRC scheme
+    (use alist-lib
+         debug
+         irregex
+         matchable
+         posix
+         srfi-69)
+    
+    (define default-synopsis (make-parameter '("Egg synopsis")))
+    (define default-author (make-parameter '("Anonymous")))
+    (define default-category (make-parameter '("uncategorized")))
+    
+    (define (pair?-or-car value)
+      (and (pair? value) (car value)))
+    
+    (define (maybe-update-metadata! metadata egg-data keys)
+      (define (update-metadatum! key new-key map default)
+        (let ((value (alist-ref/default egg-data key default)))
+          (when value
+            (hash-table-set! metadata
+                             new-key
+                             (map value)))))
+      (for-each (match-lambda ((key)
+                          (update-metadatum! key key pair?-or-car #f))
+                         ((key new-key)
+                          (update-metadatum! key new-key pair?-or-car #f))
+                         ((key new-key map)
+                          (update-metadatum! key new-key map #f))
+                         ((key new-key map default)
+                          (update-metadatum! key new-key map default)))
+        keys))
+    
+    (define (find-metafile)
+      (let ((metafiles (glob "*.meta")))
+        (and metafiles (car metafiles))))
+    
+    (define parse-metafile
+      (case-lambda
+       (() (parse-metafile (find-metafile)))
+       ((metafile)
+        (let ((metafile (and metafile (find-metafile)))
+              (metadata (make-hash-table)))
+          (when metafile
+            (and-let* ((egg-match
+                        (irregex-match
+                         '(: (=> egg-name (* any)) ".meta")
+                         metafile))
+                       (egg-name
+                        (irregex-match-substring
+                         egg-match
+                         'egg-name)))
+              (let ((egg-data (with-input-from-file metafile read)))
+                (maybe-update-metadata!
+                 metadata
+                 egg-data
+                 `((synopsis description ,pair?-or-car ,(default-synopsis))
+                   (author author ,pair?-or-car ,(default-author))
+                   (maintainer)
+                   (files)
+                   (license)
+                   (category category ,pair?-or-car ,(default-category))
+                   (needs depends ,values)
+                   (depends depends ,values)
+                   (test-depends test-depends ,values)
+                   (hidden hidden ,null?)
+                   (platform)
+                   (foreign-depends foreign-depends ,values))))))
+          metadata))))
+    
+    (debug (hash-table->alist (parse-metafile)))
+  #+END_SRC
+* DONE Need version history and license
+  CLOSED: [2013-08-18 Sun 03:04]
+  See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
+  the git-tags? Assumes that we’re in a git repo.
+
+  License is simply part of the metadata; maybe we should get it from
+  the [[egg]], after all.
+* DONE Get metadata from egg.
+  CLOSED: [2013-08-18 Sun 03:04]
+# <<egg>>
+  Authors, License, &c.
+* DONE Changelog
+  CLOSED: [2013-08-18 Sun 03:04]
+* DONE Repository
+  CLOSED: [2013-08-18 Sun 03:04]
 * DONE We're still getting parser-leakage!
   CLOSED: [2012-10-11 Thu 04:02]
   - CLOSING NOTE [2012-10-11 Thu 04:02] \\
