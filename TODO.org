@@ -1,3 +1,23 @@
+* TODO Versions
+  Parse =*.release-info= to get the versions; look up said tags for
+  git, svn, hg, &c.
+* TODO Find a canonical egg to imitate.
+  Or, just do a survey for how to handle e.g. dependencies, versions.
+* TODO Pull things out of the metafile.
+  See [[http://wiki.call-cc.org/Metafile%2520reference][here]]; includes:
+
+  - Synopsis
+  - Author
+  - Maintainer
+  - Files
+  - License
+  - Category
+  - Needs
+  - Depends
+  - Test-depends
+  - Hidden
+  - Platform
+  - Foreign-depends
 * TODO Need version history and license
   See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
   the git-tags? Assumes that we’re in a git repo.
