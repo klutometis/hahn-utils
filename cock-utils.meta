@@ -8,7 +8,7 @@
           define-record-and-printer
           environments
           fmt
-          git
+          ;; git
           matchable
           miscmacros
           shell

@@ -23,7 +23,7 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
        define-record-and-printer
        environments
        fmt
-       git
+       ;; git
        irregex
        lolevel
        matchable

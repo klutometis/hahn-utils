@@ -459,10 +459,12 @@ EOF
    ((docexprs metafile repo)
     (let* ((document (make-document (make-hash-table) (make-stack)))
            (parsed-docexprs (wiki-parse-docexprs document docexprs)))
-      (let ((data (hash-table-merge
-                   (hash-table-merge (document-data document)
-                                     (parse-metafile metafile))
-                   (repo-metadata repo))))
+      (let (;; (data (hash-table-merge
+            ;;        (hash-table-merge (document-data document)
+            ;;                          (parse-metafile metafile))
+            ;;        (repo-metadata repo)))
+            (data (hash-table-merge (document-data document)
+                                    (parse-metafile metafile))))
         (let ((author
                (hash-table-ref/default data 'author (default-author)))
               (username
@@ -490,8 +492,9 @@ EOF
                    '()))
               (license
                (hash-table-ref/default data 'license #f))
-              (versions
-               (hash-table-ref/default data 'versions '())))
+              ;; (versions
+              ;;  (hash-table-ref/default data 'versions '()))
+              )
           (display (wiki-preamble title description))
           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
           (display (wiki-postamble author
@@ -499,4 +502,4 @@ EOF
                                    license
                                    repository
                                    dependencies
-                                   versions))))))))
+                                   '()))))))))
