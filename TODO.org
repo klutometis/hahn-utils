@@ -1,3 +1,4 @@
+* TODO Have some default rule for including unknown metadata.
 * TODO Optional descriptions for examples?
 * TODO Versions
   Parse =*.release-info= to get the versions; look up said tags for
