@@ -26,6 +26,80 @@
 
   Can we do away with the cock-preamble altogether? User and email
   might be tricky.
+
+  Also =repository=: see [[http://api.call-cc.org/doc/pseudo-meta-egg-info][here]].
+
+  #+BEGIN_SRC scheme
+    (use alist-lib
+         debug
+         irregex
+         matchable
+         posix
+         srfi-69)
+    
+    (define default-synopsis (make-parameter '("Egg synopsis")))
+    (define default-author (make-parameter '("Anonymous")))
+    (define default-category (make-parameter '("uncategorized")))
+    
+    (define (pair?-or-car value)
+      (and (pair? value) (car value)))
+    
+    (define (maybe-update-metadata! metadata egg-data keys)
+      (define (update-metadatum! key new-key map default)
+        (let ((value (alist-ref/default egg-data key default)))
+          (when value
+            (hash-table-set! metadata
+                             new-key
+                             (map value)))))
+      (for-each (match-lambda ((key)
+                          (update-metadatum! key key pair?-or-car #f))
+                         ((key new-key)
+                          (update-metadatum! key new-key pair?-or-car #f))
+                         ((key new-key map)
+                          (update-metadatum! key new-key map #f))
+                         ((key new-key map default)
+                          (update-metadatum! key new-key map default)))
+        keys))
+    
+    (define (find-metafile)
+      (let ((metafiles (glob "*.meta")))
+        (and metafiles (car metafiles))))
+    
+    (define parse-metafile
+      (case-lambda
+       (() (parse-metafile (find-metafile)))
+       ((metafile)
+        (let ((metafile (and metafile (find-metafile)))
+              (metadata (make-hash-table)))
+          (when metafile
+            (and-let* ((egg-match
+                        (irregex-match
+                         '(: (=> egg-name (* any)) ".meta")
+                         metafile))
+                       (egg-name
+                        (irregex-match-substring
+                         egg-match
+                         'egg-name)))
+              (let ((egg-data (with-input-from-file metafile read)))
+                (maybe-update-metadata!
+                 metadata
+                 egg-data
+                 `((synopsis description ,pair?-or-car ,(default-synopsis))
+                   (author author ,pair?-or-car ,(default-author))
+                   (maintainer)
+                   (files)
+                   (license)
+                   (category category ,pair?-or-car ,(default-category))
+                   (needs depends ,values)
+                   (depends depends ,values)
+                   (test-depends test-depends ,values)
+                   (hidden hidden ,null?)
+                   (platform)
+                   (foreign-depends foreign-depends ,values))))))
+          metadata))))
+    
+    (debug (hash-table->alist (parse-metafile)))
+  #+END_SRC
 * TODO Need version history and license
   See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
   the git-tags? Assumes that we’re in a git repo.
