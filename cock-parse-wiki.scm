@@ -432,7 +432,8 @@ EOF
               (username
                (or
                 (hash-table-ref/default data 'username #f)
-                (hash-table-ref/default data 'user (default-user))))
+                (hash-table-ref/default data 'user #f)
+                (default-user)))
               (email
                (hash-table-ref/default data 'email (default-email)))
               (repository
@@ -442,9 +443,11 @@ EOF
               (title
                (let ((title (hash-table-ref/default data 'title #f))
                      (egg (hash-table-ref/default data 'egg #f)))
-                 (and title egg (default-title))))
+                 (or title egg (default-title))))
               (description
-               (hash-table-ref/default data 'description (default-synopsis))))
+               (or (hash-table-ref/default data 'description #f)
+                   (hash-table-ref/default data 'synopsis #f)
+                   (default-synopsis))))
           (display (wiki-preamble title description))
           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
           (display (wiki-postamble author username))))))))
