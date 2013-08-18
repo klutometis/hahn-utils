@@ -119,7 +119,8 @@ EOF
       (wiki-subsubtitle "License")
       license)
      "")
-#(if (null? dependencies)
+#(if (or (not dependencies)
+         (null? dependencies))
      ""
      (string-append
       (wiki-subsubtitle "Dependencies")
@@ -129,7 +130,8 @@ EOF
             dependencies)
        "* "
        'prefix)))
-#(if (null? versions)
+#(if (or (not versions)
+         (null? versions))
      ""
      (string-append
       (wiki-subsubtitle "Versions")
