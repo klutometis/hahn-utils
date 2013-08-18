@@ -243,3 +243,80 @@
                       (read-next (read))))))))
       files)
     (docexprs)))
+
+(define default-author (make-parameter '("Anonymous")))
+(define default-category (make-parameter '("uncategorized")))
+(define default-email (make-parameter '("anonymous@example.com")))
+(define default-synopsis (make-parameter '("Egg synopsis")))
+(define default-title (make-parameter #f))
+(define default-user (make-parameter '("anonymous")))
+
+(define (pair?-or-car value)
+  (and (pair? value) (car value)))
+
+(define (maybe-update-metadata! metadata egg-data keys)
+  (define (update-metadatum! key new-key map default)
+    (let ((value (alist-ref/default egg-data key default)))
+      (when value
+        (hash-table-set! metadata
+                         new-key
+                         (map value)))))
+  ;; Get the ones we've explicitly listed; get the rest.
+  (for-each (match-lambda ((key)
+                      (update-metadatum! key key pair?-or-car #f))
+                     ((key new-key)
+                      (update-metadatum! key new-key pair?-or-car #f))
+                     ((key new-key map)
+                      (update-metadatum! key new-key map #f))
+                     ((key new-key map default)
+                      (update-metadatum! key new-key map default)))
+    keys)
+  (for-each (match-lambda ((key . rest)
+                      ;; If it's a one-member list that contains a
+                      ;; string, let's call it a string.
+                      (if (and (= (length rest) 1)
+                               (string? (car rest)))
+                          (hash-table-set! metadata key (car rest))
+                          (hash-table-set! metadata key rest))))
+    egg-data))
+
+(define (find-metafile)
+  (let ((metafiles (glob "*.meta")))
+    (and metafiles (car metafiles))))
+
+(define parse-metafile
+  (case-lambda
+   (() (parse-metafile (find-metafile)))
+   ((metafile)
+    (let ((metafile (or metafile (find-metafile)))
+          (metadata (make-hash-table)))
+      (when metafile
+        (and-let* ((egg-match
+                    (irregex-match
+                     '(: (=> egg-name (* any)) ".meta")
+                     metafile))
+                   (egg-name
+                    (irregex-match-substring
+                     egg-match
+                     'egg-name)))
+          (hash-table-set! metadata 'egg egg-name)
+          (let ((egg-data (with-input-from-file metafile read)))
+            (maybe-update-metadata!
+             metadata
+             egg-data
+             `((author author ,pair?-or-car ,(default-author))
+               (category category ,pair?-or-car ,(default-category))
+               (depends depends ,values)
+               (email email ,pair?-or-car ,(default-email))
+               (files)
+               (foreign-depends foreign-depends ,values)
+               (hidden hidden ,null?)
+               (license)
+               (maintainer)
+               (needs depends ,values)
+               (synopsis description ,pair?-or-car ,(default-synopsis))
+               (test-depends test-depends ,values)
+               (title title ,pair?-or-car ,(default-title))
+               (user user ,pair?-or-car ,(default-user))
+               (platform)))))) 
+      metadata))))
