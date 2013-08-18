@@ -14,11 +14,18 @@
   - License
   - Category
   - Needs
+    - Why not include a link, too?
   - Depends
   - Test-depends
   - Hidden
   - Platform
   - Foreign-depends
+
+  Too bad we can’t get the name of the egg from the =.meta=; what
+  about the name of the metafile itself?
+
+  Can we do away with the cock-preamble altogether? User and email
+  might be tricky.
 * TODO Need version history and license
   See [[http://wiki.call-cc.org/eggref/4/http-session][http-session]], for example; can take the version history from
   the git-tags? Assumes that we’re in a git repo.
