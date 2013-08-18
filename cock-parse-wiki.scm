@@ -99,11 +99,45 @@ EOF
 EOF
 )
 
-(define (wiki-postamble author username)
+(define (wiki-postamble author
+                        username
+                        license
+                        repository
+                        dependencies
+                        versions)
   #<#EOF
 #(wiki-subtitle "About this egg")
 #(wiki-subsubtitle "Author")
 [[/users/#{username}#(integer->char 124)#{author}]]
+#(if repository
+     (string-append
+      (wiki-subsubtitle "Repository")
+      (format "[[~a]]" repository))
+     "")
+#(if license
+     (string-append
+      (wiki-subsubtitle "License")
+      license)
+     "")
+#(if (null? dependencies)
+     ""
+     (string-append
+      (wiki-subsubtitle "Dependencies")
+      (string-join
+       (map (lambda (dependency)
+              (format "[[~a]]~%" dependency))
+            dependencies)
+       "* "
+       'prefix)))
+#(if (null? versions)
+     ""
+     (string-append
+      (wiki-subsubtitle "Versions")
+      (string-join
+       (map (match-lambda ((tag . message)
+                      (format "; ~a : ~a" tag (string-trim-both message))))
+            versions)
+       "\n")))
 #(wiki-subsubtitle "Colophon")
 Documented by [[/egg/cock#(integer->char 124)cock]].
 EOF
@@ -421,12 +455,14 @@ EOF
     (docexprs "The parsed docexprs"))
   (case-lambda
    ((docexprs) (wiki-write-docexprs docexprs #f))
-   ((docexprs metafile)
+   ((docexprs metafile) (wiki-write-docexprs docexprs #f #f))
+   ((docexprs metafile repo)
     (let* ((document (make-document (make-hash-table) (make-stack)))
            (parsed-docexprs (wiki-parse-docexprs document docexprs)))
-      (let ((data (hash-table-merge (document-data document)
-                                    (parse-metafile metafile))))
-        (debug (hash-table->alist data))
+      (let ((data (hash-table-merge
+                   (hash-table-merge (document-data document)
+                                     (parse-metafile metafile))
+                   (repo-metadata repo))))
         (let ((author
                (hash-table-ref/default data 'author (default-author)))
               (username
@@ -447,7 +483,20 @@ EOF
               (description
                (or (hash-table-ref/default data 'description #f)
                    (hash-table-ref/default data 'synopsis #f)
-                   (default-synopsis))))
+                   (default-synopsis)))
+              (dependencies
+               (or (hash-table-ref/default data 'depends #f)
+                   (hash-table-ref/default data 'needs #f)
+                   '()))
+              (license
+               (hash-table-ref/default data 'license #f))
+              (versions
+               (hash-table-ref/default data 'versions #f)))
           (display (wiki-preamble title description))
           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
-          (display (wiki-postamble author username))))))))
+          (display (wiki-postamble author
+                                   username
+                                   license
+                                   repository
+                                   dependencies
+                                   versions))))))))
