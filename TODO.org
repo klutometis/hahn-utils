@@ -203,13 +203,6 @@
       @("Sort of"
         (qux "Yes, wirklich")))
   #+END_SRC
-* TODO =setup-helper=-like-thing we can call from setup.
-# <<setup-helper>>
-  Would define a form =cock= on analogy with e.g. =compile=;
-  basically, a wrapper around =run=. Has options like: =output:=; if
-  given no files, picks up all =.scm= in the directory?
-
-  Would be nice if it could default to e.g. =<egg-name>.wiki=.
 * TODO Groff output for man-pages?
   This is usually bin-specific, though; we'd put directives in the
   bin-file, then, wouldn't we: and couldn't we parse =args= while
@@ -410,6 +403,14 @@
   Maybe this can be an extension.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE =setup-helper=-like-thing we can call from setup.
+  CLOSED: [2013-09-01 Sun 17:49]
+# <<setup-helper>>
+  Would define a form =cock= on analogy with e.g. =compile=;
+  basically, a wrapper around =run=. Has options like: =output:=; if
+  given no files, picks up all =.scm= in the directory?
+
+  Would be nice if it could default to e.g. =<egg-name>.wiki=.
 * DONE Have some default rule for including unknown metadata.
   CLOSED: [2013-08-18 Sun 03:04]
 * DONE Versions
