@@ -2,7 +2,7 @@
 
 (setup-shared-extension-module
  'cock-utils
- (extension-version "0.3.1")
+ (extension-version "0.4")
  compile-options: '(-X cock))
 
 ;;; Cock executable
