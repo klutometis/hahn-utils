@@ -15,5 +15,5 @@
           srfi-95
           stack
           usage)
- (test-depends)
+ (test-depends test)
  (foreign-depends))
