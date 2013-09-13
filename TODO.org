@@ -1,4 +1,3 @@
-* TODO Fix the lexical ordering bug with versions over 9.
 * TODO Parameters should have left-facing arrows.
   See e.g. [[http://wiki.call-cc.org/eggref/4/twilio#twilio-sid][twilio-sid]].
 * TODO Iterate through =revisions= in =.release-info=.
@@ -406,6 +405,8 @@
   Maybe this can be an extension.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE Fix the lexical ordering bug with versions over 9.
+  CLOSED: [2013-09-13 Fri 07:13]
 * DONE =setup-helper=-like-thing we can call from setup.
   CLOSED: [2013-09-01 Sun 17:49]
 # <<setup-helper>>
