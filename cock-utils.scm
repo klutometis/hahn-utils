@@ -11,7 +11,8 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
   (parse-files
    tex-write-docexprs
    wiki-write-docexprs
-   with-working-directory)
+   with-working-directory
+   version<=?) 
   (import chicken
           data-structures
           extras
@@ -31,6 +32,7 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
        posix
        regex
        srfi-13
+       srfi-14
        srfi-69
        srfi-95
        stack
