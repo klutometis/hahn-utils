@@ -255,6 +255,14 @@
   (let ((metafiles (glob "*.meta")))
     (and metafiles (car metafiles))))
 
+(define (version<=? x y)
+  (fold (lambda (x y c) (and (<= (string->number x)
+                            (string->number y))
+                        c))
+        #t
+        (string-tokenize x char-set:digit)
+        (string-tokenize y char-set:digit)))
+
 (define (repo-metadata repo)
   (let ((metadata (make-hash-table)))
     (handle-exceptions exn
@@ -269,7 +277,7 @@
                           (map (lambda (tag) (cons (tag-name tag)
                                               (tag-message tag)))
                                tags)
-                          string<?
+                          version<=?
                           car))
         metadata))))
 
