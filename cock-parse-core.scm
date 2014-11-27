@@ -255,13 +255,17 @@
   (let ((metafiles (glob "*.meta")))
     (and metafiles (car metafiles))))
 
+;;; Strong assumptions here about the nature of a version: a.b.....z.
 (define (version<=? x y)
-  (fold (lambda (x y c) (and (<= (string->number x)
-                            (string->number y))
-                        c))
-        #t
-        (string-tokenize x char-set:digit)
-        (string-tokenize y char-set:digit)))
+  (let iter ((xs (map string->number (string-tokenize x char-set:digit)))
+             (ys (map string->number (string-tokenize x char-set:digit))))
+    (cond ((null? xs) #t)
+          ((null? ys) #f)
+          (else
+           (let ((x (car xs)) (y (car ys)))
+             (cond ((< x y) #t)
+                   ((> x y) #f)
+                   (else (iter (cdr xs) (cdr ys)))))))))
 
 (define (repo-metadata repo)
   (let ((metadata (make-hash-table)))
