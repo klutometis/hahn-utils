@@ -405,6 +405,11 @@
   Maybe this can be an extension.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE Come up with a link-abstraction (instead of e.g. =format=).
+  CLOSED: [2014-11-27 Thu 14:47]
+* DONE Add a link to the version on github.
+  CLOSED: [2014-11-27 Thu 14:47]
+  Need the repo name, the author; can we use the repository? Why not?
 * DONE Fix the lexical ordering bug with versions over 9.
   CLOSED: [2013-09-13 Fri 07:13]
 * DONE =setup-helper=-like-thing we can call from setup.
