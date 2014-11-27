@@ -1,3 +1,12 @@
+(define wiki-link
+  (case-lambda
+   ((link) (wiki-link link #f))
+   ((link text)
+  #<#EOF
+[[#{link}#(if text (format "|~a" text) "")]]
+EOF
+)))
+
 (define (wiki-title title)
   #<#EOF
 == #{title}
@@ -72,7 +81,7 @@ EOF
 
 (define (wiki-export export)
   #<#EOF
-* [[###{export}]]
+* #(wiki-link (format "#~a" export))
 EOF
 )
 
@@ -94,7 +103,7 @@ EOF
   #<#EOF
 #(wiki-title title)
 #{description}
-[[toc:]]
+#(wiki-link "toc:")
 
 EOF
 )
@@ -108,11 +117,11 @@ EOF
   #<#EOF
 #(wiki-subtitle "About this egg")
 #(wiki-subsubtitle "Author")
-[[/users/#{username}#(integer->char 124)#{author}]]
+#(wiki-link (format "/users/~a" username) author)
 #(if repository
      (string-append
       (wiki-subsubtitle "Repository")
-      (format "[[~a]]" repository))
+      (wiki-link repository))
      "")
 #(if license
      (string-append
@@ -125,7 +134,7 @@ EOF
       (wiki-subsubtitle "Dependencies")
       (string-join
        (map (lambda (dependency)
-              (format "[[~a]]~%" dependency))
+              (format "~a~%" (wiki-link dependency)))
             dependencies)
        "* "
        'prefix)))
@@ -139,7 +148,7 @@ EOF
             versions)
        "\n")))
 #(wiki-subsubtitle "Colophon")
-Documented by [[/egg/cock#(integer->char 124)cock]].
+Documented by #(wiki-link "/egg/cock" "cock").
 EOF
 )
 
