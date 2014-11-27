@@ -108,6 +108,14 @@ EOF
 EOF
 )
 
+;;; TODO: This is extremely github-specific.
+(define (tag-or-release repository tag)
+  (if repository
+      (wiki-link
+       (format "~a/releases/tag/~a" repository tag)
+       tag)
+      tag))
+
 (define (wiki-postamble author
                         username
                         license
@@ -144,7 +152,9 @@ EOF
       (wiki-subsubtitle "Versions")
       (string-join
        (map (match-lambda ((tag . message)
-                      (format "; ~a : ~a" tag (string-trim-both message))))
+                      (format "; ~a : ~a"
+                              (tag-or-release repository tag)
+                              (string-trim-both message))))
             versions)
        "\n")))
 #(wiki-subsubtitle "Colophon")
