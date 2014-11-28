@@ -258,7 +258,7 @@
 ;;; Strong assumptions here about the nature of a version: a.b.....z.
 (define (version<=? x y)
   (let iter ((xs (map string->number (string-tokenize x char-set:digit)))
-             (ys (map string->number (string-tokenize x char-set:digit))))
+             (ys (map string->number (string-tokenize y char-set:digit))))
     (cond ((null? xs) #t)
           ((null? ys) #f)
           (else
