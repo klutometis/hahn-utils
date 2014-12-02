@@ -4,7 +4,6 @@
      args
      cock-utils
      data-structures
-     debug
      files
      miscmacros
      posix

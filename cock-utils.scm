@@ -21,7 +21,6 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
           srfi-1
           stack)
   (use alist-lib
-       debug
        define-record-and-printer
        environments
        fmt
