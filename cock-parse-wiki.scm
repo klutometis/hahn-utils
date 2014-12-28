@@ -443,6 +443,12 @@ to {{require-extension}} all modules seen so far.")
 (define (wiki-parse-module doc expr data name exports)
   (let ((module (wiki-module name))
         (exports (make-wiki-exports exports)))
+    (hash-table-update!/default
+     data
+     'modules
+     (lambda (modules)
+       (cons name modules))
+     '())
     (thunk (parameterize ((write-source? #f))
              (write-wiki-block doc
                                expr
