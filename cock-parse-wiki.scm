@@ -253,16 +253,21 @@ EOF
   (string-join descriptions "\n\n"))
 
 (define (write-example data description expressions)
+  @("Renders an example, evaluating the expressions; attempts
+to {{require-extension}} all modules seen so far.")
   (display description)
   (newline)
-  (let ((env (environment-copy (interaction-environment) #t))
-        (egg (hash-table-ref/default data 'egg #f)))
-    ;; We can't seem to use `use' with env.
-    (when egg (eval `(require-extension ,(string->symbol egg))))
+  (let ((env (interaction-environment))
+        (egg (hash-table-ref/default data 'egg #f))
+        (modules (hash-table-ref/default data 'modules '())))
+    (for-each (lambda (module)
+                (eval `(require-extension ,module) env))
+      modules)
     (for-each (lambda (expression)
                 (fmt #t (columnar " " (with-width 78 (pretty expression))))
-                (fmt #t (columnar "  => " (with-width 74 (pretty (eval expression))))
-                     " " nl))
+                (fmt #t (columnar "  => " (with-width 74 (pretty (eval expression env))))
+                     " " nl)
+                )
       expressions)))
 
 (define (write-example-no-eval data description expressions)
