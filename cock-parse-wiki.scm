@@ -482,11 +482,16 @@ to {{require-extension}} all modules seen so far.")
 ;;; Needs to be generalized.
 (define wiki-write-docexprs
   @("Write the source-derived docexprs as svnwiki."
-    (docexprs "The parsed docexprs"))
+    (docexprs "The parsed docexprs")
+    (metafile "The egg's .meta file")
+    (repo "The e.g. git-repo")
+    (fragment? "Whether to produce a document-fragment as opposed to a
+whole document (useful for debugging)"))
   (case-lambda
    ((docexprs) (wiki-write-docexprs docexprs #f))
    ((docexprs metafile) (wiki-write-docexprs docexprs #f #f))
-   ((docexprs metafile repo)
+   ((docexprs metafile repo) (wiki-write-docexprs docexprs #f #f #f))
+   ((docexprs metafile repo fragment?)
     (let* ((document (make-document (make-hash-table) (make-stack)))
            (parsed-docexprs (wiki-parse-docexprs document docexprs)))
       (let ((data (hash-table-merge
@@ -522,11 +527,13 @@ to {{require-extension}} all modules seen so far.")
                (hash-table-ref/default data 'license #f))
               (versions
                (hash-table-ref/default data 'versions '())))
-          (display (wiki-preamble title description))
+          (unless fragment?
+            (display (wiki-preamble title description)))
           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
-          (display (wiki-postamble author
-                                   username
-                                   license
-                                   repository
-                                   dependencies
-                                   versions))))))))
+          (unless fragment?
+            (display (wiki-postamble author
+                                     username
+                                     license
+                                     repository
+                                     dependencies
+                                     versions)))))))))
