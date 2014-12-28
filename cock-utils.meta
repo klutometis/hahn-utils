@@ -4,8 +4,9 @@
  (license "BSD")
  (depends alist-lib
           args
+          cock
+          debug
           define-record-and-printer
-          environments
           fmt
           git
           matchable
@@ -14,5 +15,5 @@
           srfi-95
           stack
           usage)
- (test-depends test)
+ (test-depends cock files ports test)
  (foreign-depends))
