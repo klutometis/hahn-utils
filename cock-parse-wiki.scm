@@ -78,12 +78,6 @@ EOF
 EOF
 )
 
-(define (wiki-record type)
-  #<#EOF
-<record>#{type}</record>
-EOF
-)
-
 (define (wiki-module name)
   #<#EOF
 '''[module]''' {{#{name}}}
