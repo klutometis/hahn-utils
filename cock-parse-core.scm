@@ -252,8 +252,10 @@
 (define default-user (make-parameter '("anonymous")))
 
 (define (find-metafile)
-  (let ((metafiles (glob "*.meta")))
-    (and metafiles (car metafiles))))
+  (and-let* ((metafiles (glob "*.meta"))
+             ((pair? metafiles))
+             (metafile (car metafiles)))
+    metafile))
 
 ;;; Strong assumptions here about the nature of a version: a.b.....z.
 (define (version<=? x y)
