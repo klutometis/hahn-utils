@@ -80,7 +80,7 @@ EOF
 
 (define (wiki-module name)
   #<#EOF
-'''[module]''' {{#{name}}}
+#(wiki-italics "[module]") #(wiki-monospace name)
 
 EOF
 )
