@@ -270,12 +270,12 @@
                    (else (iter (cdr xs) (cdr ys)))))))))
 
 (define (repo-metadata repo)
-  (let ((metadata (make-hash-table)))
-    (handle-exceptions exn
-      metadata
-      (let* ((repo (if repo
-                       (repository-open repo)
-                       (repository-open)))
+  (let ((metadata (make-hash-table))
+        (repo (or repo ".git")))
+    ;; We have to check for directory-existence here; libgit2 seems to
+    ;; segfault when the directory doesn't exist on repository-open.
+    (when (directory-exists? repo)
+      (let* ((repo (repository-open repo))
              (tags (tags repo)))
         (hash-table-set! metadata
                          'versions
