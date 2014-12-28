@@ -1,3 +1,15 @@
+(define (wiki-monospace text)
+  #<#EOF
+{{#{text}}}
+EOF
+)
+
+(define (wiki-italics text)
+  #<#EOF
+'''#{text}'''
+EOF
+)
+
 (define wiki-link
   (case-lambda
    ((link) (wiki-link link #f))
