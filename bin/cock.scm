@@ -29,18 +29,21 @@
 (define (parse-and-write write-docexprs files metafile repo)
   (write-docexprs (apply parse-files files) metafile repo))
 
-(define (option options option)
-  (alist-ref/default options option #f))
+(define option-ref
+  (case-lambda
+   ((options option) (option-ref options option #f))
+   ((options option default)
+    (alist-ref/default options option default))))
 
 (receive (options files)
   (args:parse (command-line-arguments) (options))
   ;; Let's abstract these.
-  (let ((help? (option options 'help))
-        (latex? (option options 'latex))
-        (metafile (option options 'metafile))
-        (output (option options 'output))
-        (repo (option options 'repo))
-        (pdf? (option options 'pdf)))
+  (let ((help? (option-ref options 'help))
+        (latex? (option-ref options 'latex))
+        (metafile (option-ref options 'metafile))
+        (output (option-ref options 'output))
+        (repo (option-ref options 'repo))
+        (pdf? (option-ref options 'pdf)))
     (cond (help? (usage))
           ((null? files) (usage 1))
           (latex?
