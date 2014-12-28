@@ -94,13 +94,7 @@ EOF
 ;;; What happens with colons in the definition?
 (define (wiki-parameter parameter definition)
   #<#EOF
-; #{parameter} : #{definition}
-EOF
-)
-
-(define (wiki-monospace text)
-  #<#EOF
-{{#{text}}}
+; #(wiki-monospace parameter) : #{definition}
 EOF
 )
 
