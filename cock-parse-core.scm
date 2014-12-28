@@ -284,8 +284,8 @@
                                               (tag-message tag)))
                                tags)
                           version<=?
-                          car))
-        metadata))))
+                          car))))
+    metadata))
 
 (define parse-metafile
   (case-lambda
@@ -313,7 +313,7 @@
                                              (string? (car rest))))
                                     (hash-table-set! metadata key (car rest))
                                     (hash-table-set! metadata key rest))))
-              egg-data))))
+              egg-data)))) 
       metadata))))
 
 (define (with-working-directory directory thunk)
