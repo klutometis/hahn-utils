@@ -203,7 +203,7 @@ EOF
       ((example-no-eval)
        (lambda () (write-example-no-eval data (car arguments) (cdr arguments))))
       ((source)
-       (lambda () (write-wiki-source (car arguments))))
+       (lambda () (apply write-wiki-source arguments)))
       ((heading)
        (let ((title (car arguments)))
          (lambda ()
@@ -276,8 +276,11 @@ to {{require-extension}} all modules seen so far.")
               (fmt #t (columnar " " (with-width 78 (pretty expression)))))
     expressions))
 
-(define (write-wiki-source expression)
-  (display (wiki-source (with-output-to-string (lambda () (pp expression))))))
+(define (write-wiki-source . expressions)
+  (display
+   (wiki-source
+    (with-output-to-string
+      (lambda () (for-each pp expressions))))))
 
 (define (write-wiki-block doc
                           expr

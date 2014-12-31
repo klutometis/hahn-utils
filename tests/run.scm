@@ -93,3 +93,12 @@ Long description
  (parse-and-write-fragment-as-string
   `(,at(example-no-eval "Warning: this should never terminate."
                         (find-fermat-counterexample)))))
+
+(test
+ "Top-level source with multiple expressions"
+ "<enscript highlight=\"scheme\">(first-expression)
+(second-expression)
+</enscript>
+"
+ (parse-and-write-fragment-as-string
+  `(,at(source (first-expression) (second-expression)))))
