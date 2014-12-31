@@ -1,11 +1,17 @@
-(use setup-helper-mod)
+(use cock setup-helper-mod)
 
 (setup-shared-extension-module
  'cock-utils
- (extension-version "0.5")
+ (extension-version "0.5.1")
  compile-options: '(-X cock))
 
 ;;; Cock executable
 (compile "bin/cock.scm" -o cock)
 (install-program 'cock "cock")
 (remove-file* "cock")
+
+(run-cock -o cock-utils.wiki
+          cock-utils.scm
+          cock-parse-core.scm
+          cock-parse-wiki.scm
+          cock-parse-latex.scm)

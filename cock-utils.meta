@@ -1,5 +1,8 @@
-((synopsis "Utilities for translating in-source docs to e.g. wiki, latex")
+((synopsis "Translates in-source documentation from [[cock]] into
+wiki.")
  (author "Peter Danenberg")
+ (email "pcd@roxygen.org")
+ (repo "https://github.com/klutometis/cock-utils")
  (category doc-tools)
  (license "BSD")
  (depends alist-lib
