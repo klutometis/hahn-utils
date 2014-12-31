@@ -1,0 +1,249 @@
+== cock-utils
+
+Translates in-source documentation from [[cock]] into
+wiki.
+[[toc:]]
+=== Introduction
+{{Cock-utils}} is mainly interesting because it provides the {{cock}}
+program that takes code documented with [[cock]] and converts
+it into documentation.
+
+
+{{Cock-utils}} is a soft-dependency and shouldn't be included
+in {{depends}}.
+
+
+=== Invocation
+{{Cock-utils}} is normally invoked from a {{.setup}} file; 
+see [[https://wiki.call-cc.org/eggref/4/cock#the-setupfile|this
+example]]:
+
+
+<enscript highlight="scheme">(use cock setup-helper-mod)
+(setup-shared-extension-module
+  'landauer
+  (extension-version "0.0.1")
+  compile-options:
+  '(-X cock))
+(run-cock -o landauer.wiki landauer.scm landauer-core.scm)
+</enscript>
+It can also be run from the command line:
+  cock -o landauer.wiki landauer.scm landauer-core.scm
+
+
+See {{cock --help}} for details.
+
+
+=== Documentation
+==== {{cock-utils}}
+'''[module]''' {{cock-utils}}
+
+The cock-parse module is responsible for the heavy lifting:
+creating docexprs (see below) from documented sources code; the
+drivers then write docexprs as e.g. wiki, LaTeX.
+* [[#parse-files]]
+* [[#tex-write-docexprs]]
+* [[#wiki-write-docexprs]]
+* [[#with-working-directory]]
+* [[#version<=?]]
+==== {{current-docexpr}}
+<parameter>current-docexpr → #f</parameter>
+Enables communication with the parsing @-reader
+<enscript highlight="scheme">(define current-docexpr (make-parameter #f))
+</enscript>
+==== {{docexpr}}
+<record>docexpr</record>
+Composite documentation and adherent expression
+; {{doc}} : Documentation for the expression
+; {{expr}} : Expression surrounding the documentation
+<enscript highlight="scheme">(define-record-and-printer docexpr doc expr)
+</enscript>
+==== {{parse-files}}
+<procedure>(parse-files . files) → Resultant docexprs</procedure>
+Parse files into docexprs.
+; {{files}} : Cock-documented files to be parsed
+<enscript highlight="scheme">(define (parse-files . files)
+  (parameterize
+    ((docexprs (make-stack)))
+    (for-each
+      (lambda (file)
+        (with-input-from-file
+          file
+          (lambda ()
+            (let read-next ((expression (read)))
+              (if (not (eof-object? expression))
+                (begin
+                  (if (current-docexpr)
+                    (docexpr-expr-set! (stack-peek (docexprs)) expression))
+                  (current-docexpr #f)
+                  (read-next (read))))))))
+      files)
+    (docexprs)))
+</enscript>
+==== {{with-working-directory}}
+<procedure>(with-working-directory directory thunk) → object</procedure>
+Change to the {{directory}}, execute {{thunk}}, change back;
+returns the value of executing {{thunk}}.
+; {{directory}} : The directory to switch to
+; {{thunk}} : The thunk to execute
+<enscript highlight="scheme">(define (with-working-directory directory thunk)
+  (let ((original-directory (current-directory)))
+    (dynamic-wind
+      (lambda () (current-directory directory))
+      thunk
+      (lambda () (current-directory original-directory)))))
+</enscript>
+==== {{write-example}}
+<procedure>(write-example data description expressions) → unspecified</procedure>
+Renders an example, evaluating the expressions; attempts
+to {{require-extension}} all modules seen so far.
+
+<enscript highlight="scheme">(define (write-example data description expressions)
+  (display description)
+  (newline)
+  (let ((env (interaction-environment))
+        (modules (hash-table-ref/default data 'modules '())))
+    (for-each
+      (lambda (module) (eval `(require-extension ,module) env))
+      modules)
+    (for-each
+      (lambda (expression)
+        (fmt #t (columnar " " (with-width 78 (pretty expression))))
+        (fmt #t
+             (columnar "  => " (with-width 74 (pretty (eval expression env))))
+             " "
+             nl))
+      expressions)))
+</enscript>
+==== {{wiki-write-docexprs}}
+<procedure>(wiki-write-docexprs docexprs) → unspecified</procedure>
+<procedure>(wiki-write-docexprs docexprs metafile) → unspecified</procedure>
+<procedure>(wiki-write-docexprs docexprs metafile repo) → unspecified</procedure>
+<procedure>(wiki-write-docexprs docexprs metafile repo fragment?) → unspecified</procedure>
+Write the source-derived docexprs as svnwiki.
+; {{docexprs}} : The parsed docexprs
+; {{metafile}} : The egg's .meta file
+; {{repo}} : The e.g. git-repo
+; {{fragment?}} : Whether to produce a document-fragment as opposed to a whole document (useful for debugging)
+<enscript highlight="scheme">(define wiki-write-docexprs
+  (case-lambda
+    ((docexprs) (wiki-write-docexprs docexprs #f))
+    ((docexprs metafile) (wiki-write-docexprs docexprs #f #f))
+    ((docexprs metafile repo) (wiki-write-docexprs docexprs #f #f #f))
+    ((docexprs metafile repo fragment?)
+     (let* ((document (make-document (make-hash-table) (make-stack)))
+            (parsed-docexprs (wiki-parse-docexprs document docexprs)))
+       (let ((data (hash-table-merge
+                     (hash-table-merge
+                       (document-data document)
+                       (parse-metafile metafile))
+                     (repo-metadata repo))))
+         (let ((author (hash-table-ref/default data 'author (default-author)))
+               (username
+                 (or (hash-table-ref/default data 'username #f)
+                     (hash-table-ref/default data 'user #f)
+                     (default-user)))
+               (email (hash-table-ref/default data 'email (default-email)))
+               (repository
+                 (or (hash-table-ref/default data 'repository #f)
+                     (hash-table-ref/default data 'repo #f)))
+               (title (let ((title (hash-table-ref/default data 'title #f))
+                            (egg (hash-table-ref/default data 'egg #f)))
+                        (or title egg (default-title))))
+               (description
+                 (or (hash-table-ref/default data 'description #f)
+                     (hash-table-ref/default data 'synopsis #f)
+                     (default-synopsis)))
+               (dependencies
+                 (or (hash-table-ref/default data 'depends #f)
+                     (hash-table-ref/default data 'needs #f)
+                     '()))
+               (license (hash-table-ref/default data 'license #f))
+               (versions (hash-table-ref/default data 'versions '())))
+           (unless fragment? (display (wiki-preamble title description)))
+           (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+           (unless
+             fragment?
+             (display
+               (wiki-postamble
+                 author
+                 username
+                 license
+                 repository
+                 dependencies
+                 versions)))))))))
+</enscript>
+==== {{tex-write-docexprs}}
+<procedure>(tex-write-docexprs docexprs) → unspecified</procedure>
+<procedure>(tex-write-docexprs docexprs metafile) → unspecified</procedure>
+<procedure>(tex-write-docexprs docexprs metafile repo) → unspecified</procedure>
+Write the source-derived docexprs as LaTeX.
+; {{docexprs}} : The parsed docexprs
+<enscript highlight="scheme">(define tex-write-docexprs
+  (case-lambda
+    ((docexprs) (tex-write-docexprs docexprs #f))
+    ((docexprs metafile) (tex-write-docexprs docexprs #f #f))
+    ((docexprs metafile repo)
+     (let* ((document (make-document (make-hash-table) (make-stack)))
+            (parsed-docexprs (tex-parse-docexprs document docexprs)))
+       (let ((data (document-data document)))
+         (write-template
+           tex-preamble
+           `((author unquote (hash-table-ref/default data 'author "Anonymous"))
+             (email unquote
+                    (hash-table-ref/default
+                      data
+                      'email
+                      "anonymous@example.org"))
+             (title unquote
+                    (hash-table-ref/default data 'title "Documentation")))))
+       (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+       (display tex-footer)))))
+</enscript>
+=== About this egg
+
+==== Author
+
+[[/users/(anonymous)|Peter Danenberg]]
+==== Repository
+[[https://github.com/klutometis/cock-utils]]
+==== License
+BSD
+==== Dependencies
+* [[alist-lib]]
+* [[args]]
+* [[cock]]
+* [[debug]]
+* [[define-record-and-printer]]
+* [[fmt]]
+* [[git]]
+* [[matchable]]
+* [[miscmacros]]
+* [[shell]]
+* [[srfi-95]]
+* [[stack]]
+* [[usage]]
+
+==== Versions
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.1.1|0.1.1]] : Add dependencies.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.1.2|0.1.2]] : Remove circular dependency on cock; use string->symbol to evade reader.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.2|0.2]] : @internal, @example, @noop, &c.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.1|0.2.1]] : Do string->symbol on @egg.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.2|0.2.2]] : Width-specifiers, noop.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.3|0.2.3]] : @example-no-eval
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.4|0.2.4]] : Add @no-source.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.3|0.3]] : Read egg- and repo-metadata.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.3.1|0.3.1]] : Fix the case of #f versions.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4|0.4]] : Setup-helper-like thing: run-cock
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.1|0.4.1]] : Add version<=?.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.2|0.4.2]] : Move to setup-helper-cock.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.3|0.4.3]] : Fix the version-sorting mechanism.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.4|0.4.4]] : Add links to releases.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.5|0.4.5]] : Actually fix the versioning order.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.6|0.4.6]] : Use setup-helper-mod.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.7|0.4.7]] : Remove debug.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.8|0.4.8]] : Legitimately tag a release.
+; [[https://github.com/klutometis/cock-utils/releases/tag/0.5|0.5]] : Fix evaluation of examples; make testable.
+==== Colophon
+
+Documented by [[/egg/cock|cock]].
