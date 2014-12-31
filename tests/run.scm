@@ -85,3 +85,11 @@ Long description
          "Long description")
      (export-a export-b)
      (import scheme))))
+
+(test
+ "Warning: this should never terminate.
+ (find-fermat-counterexample)
+"
+ (parse-and-write-fragment-as-string
+  `(,at(example-no-eval "Warning: this should never terminate."
+                        (find-fermat-counterexample)))))
