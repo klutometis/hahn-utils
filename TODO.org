@@ -1,3 +1,15 @@
+* TODO Need to have an =@example= with explicit extensions.
+  =Sicp-eval=, for instance, breaks =@example=; should we have an
+  =@example-with-extensions= that takes a list of extensions?
+
+  Or can we have a =@use= (or =@extensions=) special-form?
+
+  Should be able to define an =@extensions= special-form; in the
+  absence of which: use the documented behavior of included all seen
+  modules.
+
+  Should that really be the default? Or should we force an
+  =(@extensions all)=?
 * TODO Think about preambles with =@example=.
   Maybe =@eval-modules=? It’s a little distracting to have to issue
   e.g. =(require-extension test)= in the examples.
