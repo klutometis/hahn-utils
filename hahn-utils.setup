@@ -1,0 +1,17 @@
+(use hahn setup-helper-mod)
+
+(setup-shared-extension-module
+ 'hahn-utils
+ (extension-version "0.5.2")
+ compile-options: '(-X hahn))
+
+;;; Hahn executable
+(compile "bin/hahn.scm" -o hahn)
+(install-program 'hahn "hahn")
+(remove-file* "hahn")
+
+(run-hahn -o hahn-utils.wiki
+          hahn-utils.scm
+          hahn-parse-core.scm
+          hahn-parse-wiki.scm
+          hahn-parse-latex.scm)

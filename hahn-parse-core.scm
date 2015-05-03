@@ -227,7 +227,7 @@
 ;;; Shouldn't we let the caller pass in its own docexprs?
 (define (parse-files . files)
   @("Parse files into docexprs."
-    (files "Cock-documented files to be parsed")
+    (files "Hahn-documented files to be parsed")
     (@to "Resultant docexprs"))
   (parameterize ((docexprs (make-stack)))
     (for-each

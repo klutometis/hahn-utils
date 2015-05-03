@@ -2,7 +2,7 @@
 
 (use alist-lib
      args
-     cock-utils
+     hahn-utils
      data-structures
      files
      miscmacros

@@ -158,7 +158,7 @@ EOF
             versions)
        "\n")))
 #(wiki-subsubtitle "Colophon")
-Documented by #(wiki-link "/egg/cock" "cock").
+Documented by #(wiki-link "/egg/hahn" "hahn").
 EOF
 )
 

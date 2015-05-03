@@ -1,5 +1,5 @@
-(use cock
-     cock-utils
+(use hahn
+     hahn-utils
      files
      ports
      test)

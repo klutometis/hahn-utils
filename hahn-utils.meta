@@ -1,13 +1,13 @@
-((synopsis "Translates in-source documentation from [[cock]] into
+((synopsis "Translates in-source documentation from [[hahn]] into
 wiki.")
  (author "Peter Danenberg")
  (email "pcd@roxygen.org")
- (repo "https://github.com/klutometis/cock-utils")
+ (repo "https://github.com/klutometis/hahn-utils")
  (category doc-tools)
  (license "BSD")
  (depends alist-lib
           args
-          cock
+          hahn
           debug
           define-record-and-printer
           fmt
@@ -18,5 +18,5 @@ wiki.")
           srfi-95
           stack
           usage)
- (test-depends cock files ports test)
+ (test-depends hahn files ports test)
  (foreign-depends))

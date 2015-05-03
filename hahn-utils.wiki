@@ -1,44 +1,44 @@
-== cock-utils
+== hahn-utils
 
-Translates in-source documentation from [[cock]] into
+Translates in-source documentation from [[hahn]] into
 wiki.
 [[toc:]]
 === Introduction
-{{Cock-utils}} is mainly interesting because it provides the {{cock}}
-program that takes code documented with [[cock]] and converts
+{{Hahn-utils}} is mainly interesting because it provides the {{hahn}}
+program that takes code documented with [[hahn]] and converts
 it into documentation.
 
 
-{{Cock-utils}} is a soft-dependency and shouldn't be included
+{{Hahn-utils}} is a soft-dependency and shouldn't be included
 in {{depends}}.
 
 
 === Invocation
-{{Cock-utils}} is normally invoked from a {{.setup}} file; 
-see [[https://wiki.call-cc.org/eggref/4/cock#the-setupfile|this
+{{Hahn-utils}} is normally invoked from a {{.setup}} file; 
+see [[https://wiki.call-cc.org/eggref/4/hahn#the-setupfile|this
 example]]:
 
 
-<enscript highlight="scheme">(use cock setup-helper-mod)
+<enscript highlight="scheme">(use hahn setup-helper-mod)
 (setup-shared-extension-module
   'landauer
   (extension-version "0.0.1")
   compile-options:
-  '(-X cock))
-(run-cock -o landauer.wiki landauer.scm landauer-core.scm)
+  '(-X hahn))
+(run-hahn -o landauer.wiki landauer.scm landauer-core.scm)
 </enscript>
 It can also be run from the command line:
-  cock -o landauer.wiki landauer.scm landauer-core.scm
+  hahn -o landauer.wiki landauer.scm landauer-core.scm
 
 
-See {{cock --help}} for details.
+See {{hahn --help}} for details.
 
 
 === Documentation
-==== {{cock-utils}}
-'''[module]''' {{cock-utils}}
+==== {{hahn-utils}}
+'''[module]''' {{hahn-utils}}
 
-The cock-parse module is responsible for the heavy lifting:
+The hahn-parse module is responsible for the heavy lifting:
 creating docexprs (see below) from documented sources code; the
 drivers then write docexprs as e.g. wiki, LaTeX.
 * [[#parse-files]]
@@ -61,7 +61,7 @@ Composite documentation and adherent expression
 ==== {{parse-files}}
 <procedure>(parse-files . files) → Resultant docexprs</procedure>
 Parse files into docexprs.
-; {{files}} : Cock-documented files to be parsed
+; {{files}} : Hahn-documented files to be parsed
 <enscript highlight="scheme">(define (parse-files . files)
   (parameterize
     ((docexprs (make-stack)))
@@ -206,13 +206,13 @@ Write the source-derived docexprs as LaTeX.
 
 [[/users/(anonymous)|Peter Danenberg]]
 ==== Repository
-[[https://github.com/klutometis/cock-utils]]
+[[https://github.com/klutometis/hahn-utils]]
 ==== License
 BSD
 ==== Dependencies
 * [[alist-lib]]
 * [[args]]
-* [[cock]]
+* [[hahn]]
 * [[debug]]
 * [[define-record-and-printer]]
 * [[fmt]]
@@ -225,25 +225,25 @@ BSD
 * [[usage]]
 
 ==== Versions
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.1.1|0.1.1]] : Add dependencies.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.1.2|0.1.2]] : Remove circular dependency on cock; use string->symbol to evade reader.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.2|0.2]] : @internal, @example, @noop, &c.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.1|0.2.1]] : Do string->symbol on @egg.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.2|0.2.2]] : Width-specifiers, noop.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.3|0.2.3]] : @example-no-eval
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.2.4|0.2.4]] : Add @no-source.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.3|0.3]] : Read egg- and repo-metadata.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.3.1|0.3.1]] : Fix the case of #f versions.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4|0.4]] : Setup-helper-like thing: run-cock
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.1|0.4.1]] : Add version<=?.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.2|0.4.2]] : Move to setup-helper-cock.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.3|0.4.3]] : Fix the version-sorting mechanism.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.4|0.4.4]] : Add links to releases.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.5|0.4.5]] : Actually fix the versioning order.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.6|0.4.6]] : Use setup-helper-mod.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.7|0.4.7]] : Remove debug.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.4.8|0.4.8]] : Legitimately tag a release.
-; [[https://github.com/klutometis/cock-utils/releases/tag/0.5|0.5]] : Fix evaluation of examples; make testable.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.1.1|0.1.1]] : Add dependencies.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.1.2|0.1.2]] : Remove circular dependency on hahn; use string->symbol to evade reader.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2|0.2]] : @internal, @example, @noop, &c.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.1|0.2.1]] : Do string->symbol on @egg.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.2|0.2.2]] : Width-specifiers, noop.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.3|0.2.3]] : @example-no-eval
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.4|0.2.4]] : Add @no-source.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.3|0.3]] : Read egg- and repo-metadata.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.3.1|0.3.1]] : Fix the case of #f versions.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4|0.4]] : Setup-helper-like thing: run-hahn
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.1|0.4.1]] : Add version<=?.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.2|0.4.2]] : Move to setup-helper-hahn.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.3|0.4.3]] : Fix the version-sorting mechanism.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.4|0.4.4]] : Add links to releases.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.5|0.4.5]] : Actually fix the versioning order.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.6|0.4.6]] : Use setup-helper-mod.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.7|0.4.7]] : Remove debug.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.8|0.4.8]] : Legitimately tag a release.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5|0.5]] : Fix evaluation of examples; make testable.
 ==== Colophon
 
-Documented by [[/egg/cock|cock]].
+Documented by [[/egg/hahn|hahn]].
