@@ -226,7 +226,7 @@ BSD
 
 ==== Versions
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.1.1|0.1.1]] : Add dependencies.
-; [[https://github.com/klutometis/hahn-utils/releases/tag/0.1.2|0.1.2]] : Remove circular dependency on hahn; use string->symbol to evade reader.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.1.2|0.1.2]] : Remove circular dependency on cock; use string->symbol to evade reader.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2|0.2]] : @internal, @example, @noop, &c.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.1|0.2.1]] : Do string->symbol on @egg.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.2|0.2.2]] : Width-specifiers, noop.
@@ -234,9 +234,9 @@ BSD
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.2.4|0.2.4]] : Add @no-source.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.3|0.3]] : Read egg- and repo-metadata.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.3.1|0.3.1]] : Fix the case of #f versions.
-; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4|0.4]] : Setup-helper-like thing: run-hahn
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4|0.4]] : Setup-helper-like thing: run-cock
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.1|0.4.1]] : Add version<=?.
-; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.2|0.4.2]] : Move to setup-helper-hahn.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.2|0.4.2]] : Move to setup-helper-cock.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.3|0.4.3]] : Fix the version-sorting mechanism.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.4|0.4.4]] : Add links to releases.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.5|0.4.5]] : Actually fix the versioning order.
@@ -244,6 +244,8 @@ BSD
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.7|0.4.7]] : Remove debug.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.4.8|0.4.8]] : Legitimately tag a release.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5|0.5]] : Fix evaluation of examples; make testable.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5.1|0.5.1]] : Document; allow multiple expressions in source.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5.2|0.5.2]] : Refactor as hahn-utils.
 ==== Colophon
 
 Documented by [[/egg/hahn|hahn]].
