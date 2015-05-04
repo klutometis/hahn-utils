@@ -142,7 +142,11 @@ EOF
       (wiki-subsubtitle "Dependencies")
       (string-join
        (map (lambda (dependency)
-              (format "~a~%" (wiki-link dependency)))
+              (format "~a~%"
+                      (wiki-link
+                       ;; If a dependency is specified as a
+                       ;; egg-version pair, just use the egg.
+                       (if (pair? dependency) (car dependency) dependency))))
             dependencies)
        "* "
        'prefix)))
