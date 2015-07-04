@@ -246,6 +246,7 @@ BSD
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5|0.5]] : Fix evaluation of examples; make testable.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5.1|0.5.1]] : Document; allow multiple expressions in source.
 ; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5.2|0.5.2]] : Refactor as hahn-utils.
+; [[https://github.com/klutometis/hahn-utils/releases/tag/0.5.3|0.5.3]] : For dependencies with versions, just use the egg.
 ==== Colophon
 
 Documented by [[/egg/hahn|hahn]].
