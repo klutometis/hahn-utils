@@ -76,6 +76,7 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
              chicken.string
              chicken.format
              chicken.read-syntax
+             chicken.io
              srfi-1
              alist-lib
              define-record-and-printer

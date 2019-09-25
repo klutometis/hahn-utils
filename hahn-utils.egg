@@ -1,5 +1,7 @@
 ((synopsis "Translates in-source documentation from [[hahn]] into
 wiki.")
+ (author "Peter Danenberg")
+ ;; repo: https://github.com/klutometis/hahn-utils
  (category doc-tools)
  (license "BSD")
  (dependencies alist-lib

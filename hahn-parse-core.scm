@@ -253,10 +253,12 @@
 (define default-user (make-parameter '("anonymous")))
 
 (define (find-metafile)
-  (and-let* ((metafiles (glob "*.meta"))
+  (and-let* ((metafiles (glob (cond-expand
+                                (chicken-4 "*.meta")
+                                (chicken-5 "*.egg"))))
              ((pair? metafiles))
              (metafile (car metafiles)))
-    metafile))
+            metafile))
 
 ;;; Strong assumptions here about the nature of a version: a.b.....z.
 (define (version<=? x y)
@@ -296,7 +298,7 @@
       (when metafile
         (and-let* ((egg-match
                     (irregex-match
-                     '(: (=> egg-name (* any)) ".meta")
+                     '(: (=> egg-name (* any)) (or ".meta" ".egg"))
                      metafile))
                    (egg-name
                     (irregex-match-substring
@@ -313,7 +315,28 @@
                                              (string? (car rest))))
                                     (hash-table-set! metadata key (car rest))
                                     (hash-table-set! metadata key rest))))
-              egg-data)))) 
+                      egg-data))
+          ;; Read comment key/value pairs
+          (let* ((egg-data (with-input-from-file metafile read-lines))
+                 (comment-keys (filter-map (lambda (line)
+                                             (irregex-match
+                                              '(: (*? space)
+                                                  (+ ";")
+                                                  (* space)
+                                                  (=> key (*? any))
+                                                  (* space)
+                                                  ":"
+                                                  (* space)
+                                                  (=> value (* any)))
+                                              line))
+                                           egg-data)))
+            (for-each
+             (lambda (m)
+               (hash-table-set! metadata
+                                (string->symbol
+                                 (irregex-match-substring m 'key))
+                                (irregex-match-substring m 'value)))
+             comment-keys))))
       metadata))))
 
 (define (with-working-directory directory thunk)
