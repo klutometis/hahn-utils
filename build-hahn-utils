@@ -1,0 +1,10 @@
+#!/bin/sh
+"$CHICKEN_CSC" -X hahn $@
+
+command -v hahn && hahn -o hahn-utils.wiki \
+                        hahn-utils.scm \
+                        hahn-parse-core.scm \
+                        hahn-parse-wiki.scm \
+                        hahn-parse-latex.scm
+
+exit 0
