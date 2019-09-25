@@ -53,7 +53,6 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
        debug
        define-record-and-printer
        fmt
-       git
        irregex
        lolevel
        matchable
@@ -77,11 +76,11 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
              chicken.format
              chicken.read-syntax
              chicken.io
+             chicken.process
              srfi-1
              alist-lib
              define-record-and-printer
              fmt
-             git
              srfi-13
              srfi-14
              srfi-69

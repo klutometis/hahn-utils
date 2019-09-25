@@ -19,15 +19,6 @@
 
   Another implication is that cock must be aware of the module (i.e.
   the module must be documented and included in the cock-invocation).
-* TODO Invoke command-line git instead of libgit2.
-  To extract tags, for instance:
-
-  #+BEGIN_SRC sh
-    git tag -n1
-  #+END_SRC
-
-  =Libgit2= is a horrific dependency: specific versions required,
-  random segfaults, etc.
 * TODO Create a test-creation mechanism.
 * TODO Looks like there might be an extra newline for =@text=.
   See e.g. [[https://wiki.call-cc.org/eggref/4/R?action%3Dedit][R]].
@@ -242,6 +233,16 @@
   Maybe this can be an extension.
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE Invoke command-line git instead of libgit2.
+CLOSED: [2019-09-27 Fri 12:14]
+  To extract tags, for instance:
+
+  #+BEGIN_SRC sh
+    git tag -n1
+  #+END_SRC
+
+  =Libgit2= is a horrific dependency: specific versions required,
+  random segfaults, etc.
 * DONE Add monospace to parameters.
   CLOSED: [2014-12-27 Sat 20:38]
 * DONE Module-awareness?

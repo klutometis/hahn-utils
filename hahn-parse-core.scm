@@ -278,14 +278,18 @@
     ;; We have to check for directory-existence here; libgit2 seems to
     ;; segfault when the directory doesn't exist on repository-open.
     (when (directory-exists? repo)
-      (let* ((repo (repository-open repo))
-             (tags (tags repo)))
+      (let* ((tags (call-with-input-pipe "git tag -n"
+                                         (lambda (p)
+                                           (map string-split
+                                                (read-lines p))))))
         (hash-table-set! metadata
                          'versions
                          (sort
-                          (map (lambda (tag) (cons (tag-name tag)
-                                                   (tag-message tag)))
-                               tags)
+                          (map
+                           (lambda (tag)
+                             (cons (car tag)
+                                   (string-join (cdr tag))))
+                           tags)
                           (lambda (a b) version<=? (car a) (car b))))))
     metadata))
 

@@ -14,7 +14,6 @@ wiki.")
                hahn
                define-record-and-printer
                fmt
-               git
                matchable
                miscmacros
                shell
