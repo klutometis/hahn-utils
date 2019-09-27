@@ -114,6 +114,15 @@
       ((or ('define (procedure . formals) . body)
            ('define procedure ('lambda formals . body)))
        ((parse-procedure) doc expr data procedure formals))
+      (('define procedure ((or 'foreign-lambda
+                               'foreign-safe-lambda)
+                           ret name . formals))
+       ((parse-procedure) doc expr data procedure formals ret))
+      (('define procedure ((or 'foreign-lambda*
+                               'foreign-safe-lambda*
+                               'foreign-primitive)
+                           ret formals . body))
+       ((parse-procedure) doc expr data procedure (map cadr formals) ret))
       (('define procedure ('case-lambda (formals . body) ...))
        ((parse-case-lambda) doc expr data procedure formals))
       (('define parameter ('make-parameter init . converter))
@@ -164,7 +173,8 @@
         (string->symbol "@example-no-eval")
         (string->symbol "@internal")
         (string->symbol "@no-source")
-        (string->symbol "@to")))
+        (string->symbol "@to")
+        (string->symbol "@args")))
 
 (define (special-parameter? parameter)
   (memq parameter special-parameters))
@@ -183,10 +193,17 @@
       (values normal-parameters special-parameters))))
 
 ;;; Generalize this.
-(define (procedure-to special-parameters)
+(define (procedure-to special-parameters #!optional foreign-ret)
   (alist-ref/default special-parameters
                      (string->symbol "@to")
-                     '("unspecified")))
+                     (or (and foreign-ret
+                              (list (symbol->string foreign-ret)))
+                         '("unspecified"))))
+
+(define (procedure-args special-parameters formals)
+  (alist-ref/default special-parameters
+                     (string->symbol "@args")
+                     formals))
 
 (define example-description car)
 
