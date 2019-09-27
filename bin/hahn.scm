@@ -1,14 +1,28 @@
 #!/usr/bin/env chicken-scheme
 
-(use alist-lib
-     args
-     hahn-utils
-     data-structures
-     files
-     miscmacros
-     posix
-     shell
-     usage)
+(cond-expand
+  (chicken-4
+   (use alist-lib
+        args
+        hahn-utils
+        data-structures
+        files
+        miscmacros
+        posix
+        shell
+        usage))
+  (chicken-5
+   (import chicken.process-context
+           chicken.port
+           (rename chicken.file (copy-file file-copy))
+           chicken.pathname
+           chicken.format
+           chicken.process
+           alist-lib
+           args
+           hahn-utils
+           miscmacros
+           shell)))
 
 (define options
   (make-parameter
@@ -19,6 +33,20 @@
          (args:make-option (r repo) (required: "REPO") "The egg's REPO")
          (args:make-option (p pdf) #:none "Output to PDF" (set! arg #t))
          (args:make-option (w wiki) #:none "Output to wiki [default]" (set! arg #t)))))
+
+(cond-expand
+  (chicken-5
+   (define (make-usage helper)
+     (lambda (#!optional exit-code)
+       (with-output-to-port
+           (if (or (not exit-code)
+                   (zero? exit-code))
+               (current-output-port)
+               (current-error-port))
+         (lambda ()
+           (helper (pathname-strip-directory (program-name)))))
+       (when exit-code (exit exit-code)))))
+  (else))
 
 (define usage
   (make-usage

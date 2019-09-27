@@ -528,6 +528,7 @@ whole document (useful for debugging)"))
               (dependencies
                (or (hash-table-ref/default data 'depends #f)
                    (hash-table-ref/default data 'needs #f)
+                   (hash-table-ref/default data 'dependencies #f)
                    '()))
               (license
                (hash-table-ref/default data 'license #f))

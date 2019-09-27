@@ -40,18 +40,19 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
    wiki-write-docexprs
    with-working-directory
    version<=?) 
-  (import chicken
-          data-structures
-          extras
-          ports
-          scheme
-          srfi-1
-          stack)
-  (use alist-lib
+  (import scheme)
+  (cond-expand
+    (chicken-4
+     (import chicken
+             data-structures
+             extras
+             ports
+             srfi-1
+             stack)
+     (use alist-lib
        debug
        define-record-and-printer
        fmt
-       git
        irregex
        lolevel
        matchable
@@ -62,7 +63,30 @@ drivers then write docexprs as e.g. wiki, LaTeX.")
        srfi-69
        srfi-95
        stack
-       utils)
+       utils))
+    (chicken-5
+     (import chicken.base
+             chicken.port
+             chicken.sort
+             chicken.irregex
+             chicken.pretty-print
+             chicken.process-context
+             chicken.file
+             chicken.string
+             chicken.format
+             chicken.read-syntax
+             chicken.io
+             chicken.process
+             srfi-1
+             alist-lib
+             define-record-and-printer
+             fmt
+             srfi-13
+             srfi-14
+             srfi-69
+             matchable
+             regex
+             stack)))
 
   (import-for-syntax matchable)
 

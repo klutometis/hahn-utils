@@ -1,0 +1,28 @@
+((synopsis "Translates in-source documentation from [[hahn]] into
+wiki.")
+ (author "Peter Danenberg")
+ ;; repo: https://github.com/klutometis/hahn-utils
+ (category doc-tools)
+ (license "BSD")
+ (dependencies alist-lib
+               srfi-1
+               srfi-13
+               srfi-14
+               srfi-69
+               regex
+               args
+               hahn
+               define-record-and-printer
+               fmt
+               matchable
+               miscmacros
+               shell
+               stack)
+ (test-dependencies hahn test)
+ (component-options (csc-options "-X" "hahn"))
+ (components
+  (extension hahn-utils)
+  (program hahn
+           (source "bin/hahn.scm")
+           (component-dependencies hahn-utils)
+           (custom-build build-hahn-utils))))

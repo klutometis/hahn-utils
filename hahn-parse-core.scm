@@ -5,10 +5,11 @@
 (define docexprs (make-parameter (make-stack)))
 
 (define-syntax thunk
-  (lambda (expression rename compare)
+  (er-macro-transformer
+   (lambda (expression rename compare)
     (let ((body (cdr expression))
           (%lambda (rename 'lambda)))
-      `(,%lambda () ,@body))))
+      `(,%lambda () ,@body)))))
 
 (define-record-and-printer null-expression)
 (define null-expression (make-null-expression))
@@ -252,10 +253,12 @@
 (define default-user (make-parameter '("anonymous")))
 
 (define (find-metafile)
-  (and-let* ((metafiles (glob "*.meta"))
+  (and-let* ((metafiles (glob (cond-expand
+                                (chicken-4 "*.meta")
+                                (chicken-5 "*.egg"))))
              ((pair? metafiles))
              (metafile (car metafiles)))
-    metafile))
+            metafile))
 
 ;;; Strong assumptions here about the nature of a version: a.b.....z.
 (define (version<=? x y)
@@ -275,16 +278,19 @@
     ;; We have to check for directory-existence here; libgit2 seems to
     ;; segfault when the directory doesn't exist on repository-open.
     (when (directory-exists? repo)
-      (let* ((repo (repository-open repo))
-             (tags (tags repo)))
+      (let* ((tags (call-with-input-pipe "git tag -n"
+                                         (lambda (p)
+                                           (map string-split
+                                                (read-lines p))))))
         (hash-table-set! metadata
                          'versions
                          (sort
-                          (map (lambda (tag) (cons (tag-name tag)
-                                              (tag-message tag)))
-                               tags)
-                          version<=?
-                          car))))
+                          (map
+                           (lambda (tag)
+                             (cons (car tag)
+                                   (string-join (cdr tag))))
+                           tags)
+                          (lambda (a b) version<=? (car a) (car b))))))
     metadata))
 
 (define parse-metafile
@@ -296,7 +302,7 @@
       (when metafile
         (and-let* ((egg-match
                     (irregex-match
-                     '(: (=> egg-name (* any)) ".meta")
+                     '(: (=> egg-name (* any)) (or ".meta" ".egg"))
                      metafile))
                    (egg-name
                     (irregex-match-substring
@@ -313,7 +319,28 @@
                                              (string? (car rest))))
                                     (hash-table-set! metadata key (car rest))
                                     (hash-table-set! metadata key rest))))
-              egg-data)))) 
+                      egg-data))
+          ;; Read comment key/value pairs
+          (let* ((egg-data (with-input-from-file metafile read-lines))
+                 (comment-keys (filter-map (lambda (line)
+                                             (irregex-match
+                                              '(: (*? space)
+                                                  (+ ";")
+                                                  (* space)
+                                                  (=> key (*? any))
+                                                  (* space)
+                                                  ":"
+                                                  (* space)
+                                                  (=> value (* any)))
+                                              line))
+                                           egg-data)))
+            (for-each
+             (lambda (m)
+               (hash-table-set! metadata
+                                (string->symbol
+                                 (irregex-match-substring m 'key))
+                                (irregex-match-substring m 'value)))
+             comment-keys))))
       metadata))))
 
 (define (with-working-directory directory thunk)
@@ -323,6 +350,6 @@ returns the value of executing {{thunk}}."
     (thunk "The thunk to execute")
     (@to "object"))
   (let ((original-directory (current-directory)))
-    (dynamic-wind (lambda () (current-directory directory))
+    (dynamic-wind (lambda () (change-directory directory))
         thunk
-        (lambda () (current-directory original-directory)))))
+        (lambda () (change-directory original-directory)))))

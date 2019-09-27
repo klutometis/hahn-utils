@@ -1,8 +1,12 @@
-(use hahn
-     hahn-utils
-     files
-     ports
-     test)
+(cond-expand
+  (chicken-4
+   (use hahn
+      hahn-utils
+      files
+      ports
+      test))
+  (chicken-5
+   (import hahn hahn-utils chicken.file chicken.port test)))
 
 (define (with-output-to-temporary-file thunk)
   @("Outputs to a temporary file and returns that file."
