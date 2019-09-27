@@ -70,6 +70,48 @@ Using +
      (- x (- y)))))
 
 (test
+ "=== {{ffi-foo*}}
+<procedure>(ffi-foo* hey thing) → int</procedure>
+FFI Description
+
+<enscript highlight=\"scheme\">(define ffi-foo*
+  (foreign-lambda* int ((double hey) (size_t thing)) \"C_return(bar);\"))
+</enscript>
+"
+ (parse-and-write-fragment-as-string
+  `(define ffi-foo*
+     ,at("FFI Description")
+     (foreign-lambda* int ((double hey) (size_t thing))
+       "C_return(bar);"))))
+
+(test
+ "=== {{ffi-foo}}
+<procedure>(ffi-foo double size_t) → int</procedure>
+FFI Description
+
+<enscript highlight=\"scheme\">(define ffi-foo (foreign-lambda int \"fn_name\" double size_t))
+</enscript>
+"
+ (parse-and-write-fragment-as-string
+  `(define ffi-foo
+     ,at("FFI Description")
+     (foreign-lambda int "fn_name" double size_t))))
+
+(test
+ "=== {{change-args}}
+<procedure>(change-args one two) → unspecified</procedure>
+change-args description
+
+<enscript highlight=\"scheme\">(define (change-args a b) (print \"Nothing\"))
+</enscript>
+"
+ (parse-and-write-fragment-as-string
+  `(define (change-args a b)
+     ,at("change-args description"
+         (@args one two))
+     (print "Nothing"))))
+
+(test
  "=== {{module}}
 '''[module]''' {{module}}
 

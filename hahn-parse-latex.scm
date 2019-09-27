@@ -252,10 +252,11 @@
          ;; Already texified above.
          (string-join parameters "\\\\\n")))))
 
-(define (tex-parse-procedure doc expr data name formals)
+(define (tex-parse-procedure doc expr data name formals #!optional foreign-ret)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters foreign-ret))
+          (formals (procedure-args special-parameters formals)))
       (let ((procedure
              (make-tex-procedure tex-procedure name formals to))
             (parameters (make-tex-parameters
